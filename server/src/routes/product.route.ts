@@ -12,4 +12,4 @@ export const productRouter = express.Router();
 productRouter.get("/products/:categoryId", getProducts);
 productRouter.post("/products/cart", checkAuth, addToCart);
 productRouter.post("/products", checkAuth, addProduct);
-productRouter.get("/product/cart/:userId", checkAuth, getCartItems);
+productRouter.get("/product/cart", checkAuth, getCartItems);

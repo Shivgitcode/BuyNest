@@ -18,15 +18,16 @@ export const signup = async (
 			);
 			return next(new ErrorHandler(`${validationErrors.join(", ")}`, 400));
 		}
-		const signupBody: SignUp = parseResult.data;
+		const signupBody = parseResult.data;
 
 		const hashPassword = await bcrypt.hash(signupBody.password, 12);
 		const newUser = await User.create({
 			username: signupBody.username,
 			password: hashPassword,
 			email: signupBody.email,
+			role: signupBody.role,
+			address: signupBody.address,
 		});
-		logger.debug(newUser.toJSON());
 		res.status(201).json({
 			message: "user created",
 			data: newUser.toJSON(),

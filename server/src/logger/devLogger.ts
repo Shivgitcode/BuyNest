@@ -17,3 +17,9 @@ export const logger = createLogger({
 	),
 	transports: [new transports.Console()],
 });
+
+export const stream = {
+	write: (message: string) => {
+		logger.info(message.trim());
+	},
+};

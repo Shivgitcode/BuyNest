@@ -7,7 +7,23 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": []
+		"ignore": [
+			"**/node_modules/**",
+			"**/dist/**",
+			"**/build/**",
+			"**/.next/**",
+			"**/coverage/**",
+			"**/*.test.js",
+			"**/*.config.js",
+			"./server/public/**",
+			"./client/public/**",
+			"./client/tsconfig.node.json",
+			"./client/tsconfig.json",
+			"./client/tsconfig.app.json",
+			"./client/src/components/ui/**"
+		],
+
+		"include": ["./server/*/**", "./client/**/*"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -19,7 +35,10 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"suspicious": {
+				"noArrayIndexKey": "warn"
+			}
 		}
 	},
 	"javascript": {

@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../ErrorHandler/error";
+import { logger } from "../logger/devLogger";
 import { verifyToken } from "../utils/tokenGenerator";
 import type { SignUp } from "../utils/types";
 
@@ -17,6 +18,7 @@ export const checkAuth = async (
 ) => {
 	try {
 		const token = req.cookies.jwt;
+
 		const isToken = await verifyToken(token);
 		if (!isToken) {
 			return next(new ErrorHandler("Unauthorized User", 401));

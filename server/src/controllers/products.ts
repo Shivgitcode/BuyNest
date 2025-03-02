@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import ErrorHandler from "../ErrorHandler/error";
 import { logger } from "../logger/devLogger";
-import Cart from "../models/cart.model";
+import CartItem from "../models/cart.model";
 import Category from "../models/categories.model";
 import Product from "../models/product.model";
 import { putImage, signedUrl } from "../utils/aws";
@@ -16,7 +16,7 @@ export const getProducts = async (
 ) => {
 	try {
 		const id = req.params.categoryId;
-		logger.debug(id);
+
 		const getProducts = await Category.findOne({
 			where: { id },
 			include: Product,
@@ -72,10 +72,14 @@ export const addToCart = async (
 	next: NextFunction,
 ) => {
 	try {
-		const { userId, productId, quantity } = req.body;
-		const addInCart = await Cart.create({
+		console.log(req.user?.id);
+		const id = req.user?.id;
+		console.log(id);
+		logger.debug(id as string, { file: "products.ts" });
+		const { productId, quantity } = req.body;
+		const addInCart = await CartItem.create({
 			productId,
-			userId,
+			userId: id,
 			quantity,
 		});
 		res.status(200).json({
@@ -93,8 +97,9 @@ export const getCartItems = async (
 	next: NextFunction,
 ) => {
 	try {
-		const id = req.params.productId;
-		const getProducts = await Cart.findOne({
+		const id = req.user?.id;
+		console.log(id);
+		const getProducts = await CartItem.findAll({
 			where: { userId: id },
 			include: Product,
 		});

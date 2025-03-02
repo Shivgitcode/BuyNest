@@ -5,8 +5,10 @@ export const SignupSchema = z.object({
 		.string({ message: "enter email" })
 		.email({ message: "enter valid mail" }),
 	password: z.string({ message: "enter password" }),
+	role: z.string({ message: "Please mention your role" }),
+	address: z.string({ message: "Please add your Address" }),
 });
-export type SignUp = z.infer<typeof SignupSchema>;
+export type SignUp = z.infer<typeof SignupSchema> & { id: string };
 
 export const LoginSchema = z.object({
 	email: z

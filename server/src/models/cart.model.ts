@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../sequalize/db";
 
-const Cart = sequelize.define("Cart", {
+const CartItem = sequelize.define("Cart", {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
@@ -31,4 +31,4 @@ const Cart = sequelize.define("Cart", {
 	},
 });
 
-export default Cart;
+export default CartItem;

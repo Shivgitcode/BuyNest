@@ -1,4 +1,4 @@
-import Cart from "../models/cart.model";
+import CartItem from "../models/cart.model";
 import Category from "../models/categories.model";
 import Product from "../models/product.model";
 import User from "../models/user.model";
@@ -13,17 +13,17 @@ export const defineAssociations = () => {
 		foreignKey: "CategoryId",
 	});
 
-	User.hasOne(Cart, {
+	User.hasMany(CartItem, {
 		foreignKey: "userId",
 	});
-	Cart.belongsTo(User, {
+	CartItem.belongsTo(User, {
 		foreignKey: "userId",
 	});
 
-	Cart.hasMany(Product, {
+	CartItem.belongsTo(Product, {
 		foreignKey: "productId",
 	});
-	Product.belongsTo(Cart, {
+	Product.hasMany(CartItem, {
 		foreignKey: "productId",
 	});
 };
