@@ -1,0 +1,11 @@
+{
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"husky": "^9.1.7"
+	},
+	"scripts": {
+		"lint": "biome check server",
+		"format": "biome check --write server",
+		"prepare": "husky"
+	}
+}
