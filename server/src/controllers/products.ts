@@ -111,3 +111,46 @@ export const getCartItems = async (
 		if (error instanceof Error) next(error);
 	}
 };
+
+export async function getAllCategories(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) {
+	try {
+		const allCategories = await Category.findAll({
+			attributes: {
+				exclude: ["createdAt", "updatedAt"],
+			},
+		});
+
+		res.status(200).json({
+			message: "all categories",
+			categories: allCategories,
+		});
+	} catch (error) {
+		if (error instanceof Error) next(error);
+	}
+}
+
+export async function getFeaturedProducts(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) {
+	try {
+		const featuredProducts = await Product.findAll({
+			limit: 10,
+			attributes: {
+				exclude: ["desc", "createdAt", "updatedAt", "categoryId", "CategoryId"],
+			},
+		});
+
+		res.status(200).json({
+			message: "featured products",
+			featuredProducts,
+		});
+	} catch (error) {
+		next(error);
+	}
+}

@@ -9,6 +9,7 @@ import { authRouter } from "./routes/auth.route";
 import { dbConnect } from "./sequalize/db";
 import "./utils/config";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import morgan from "morgan";
 import { stream } from "./logger/devLogger";
 import { productRouter } from "./routes/product.route";
@@ -22,6 +23,16 @@ dbConnect();
 app.use(morgan("combined", { stream: stream }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+	cors({
+		origin:
+			process.env.NODE === "production"
+				? process.env.DEPLOYED_URL
+				: "http://localhost:5173",
+		credentials: true,
+		methods: ["GET", "POST", "PUT", "PATCH"],
+	}),
+);
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", authRouter, productRouter);
 

@@ -1,17 +1,21 @@
 import { createLogger, format, transports } from "winston";
 
-const { printf, cli, timestamp, colorize, align, combine } = format;
-const logFormat = printf(
-	({ level, message, timeStamp, ...meta }) =>
-		`[${timestamp} ${level} :${message} ${JSON.stringify(meta)}]`,
-);
+const { printf, cli, timestamp, colorize, combine, errors } = format;
+
+const logFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
+	return `[${timestamp}] ${level}: ${message} ${
+		stack ? `\nStack: ${stack}` : ""
+	} ${Object.keys(meta).length ? JSON.stringify(meta) : ""}`;
+});
+
 export const logger = createLogger({
 	level: "debug",
 	format: combine(
-		colorize(),
 		timestamp({
-			format: "YYYY-MM-DD hh:mm:ss",
+			format: "YYYY-MM-DD HH:mm:ss",
 		}),
+		colorize(),
+		errors({ stack: true }),
 		cli(),
 		logFormat,
 	),

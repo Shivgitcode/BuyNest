@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { relatedProducts } from "@/utils/data";
 import { product } from "@/utils/data";
-import { Heart, Share, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router";
 

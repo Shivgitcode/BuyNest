@@ -1,20 +1,27 @@
+import { getFeaturedProducts } from "@/actions/getFeaturedProducts";
 import CategoryCard from "@/components/CategoryCard";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
+import { ProductCardSkeleton } from "@/components/ProductCardSkeleton";
 import { Button } from "@/components/ui/button";
-import { productsData } from "@/utils/data";
+// import { productsData } from "@/utils/data";
 import { categoriesData } from "@/utils/data";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 
 const Index = () => {
 	const [isLoaded, setIsLoaded] = useState(false);
-
-	useEffect(() => {
-		setIsLoaded(true);
-	}, []);
+	const {
+		data: productsData,
+		isError,
+		isFetching,
+	} = useQuery({
+		queryKey: ["featured"],
+		queryFn: getFeaturedProducts,
+	});
 
 	return (
 		<div className="min-h-screen flex flex-col">
@@ -94,16 +101,19 @@ const Index = () => {
 							</Link>
 						</div>
 						<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-							{productsData.map((product) => (
-								<ProductCard
-									key={product.id}
-									id={product.id}
-									name={product.name}
-									price={product.price}
-									image={product.image}
-									rating={product.rating}
-								/>
-							))}
+							{isFetching ? (
+								<ProductCardSkeleton />
+							) : (
+								productsData?.map((el) => (
+									<ProductCard
+										key={el.id}
+										id={el.id}
+										name={el.product}
+										price={el.price}
+										image={el.image}
+									/>
+								))
+							)}
 						</div>
 					</div>
 				</section>

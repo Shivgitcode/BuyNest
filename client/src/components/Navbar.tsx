@@ -1,8 +1,31 @@
+import { logoutUser } from "@/actions/logoutUser";
 import { Button } from "@/components/ui/button";
-import { Search, ShoppingCart, User } from "lucide-react";
-import { Link } from "react-router";
+import { useAuth } from "@/context/AuthContext";
+import { useMutation } from "@tanstack/react-query";
+import { LogOut, Search, ShoppingCart, User } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const Navbar = () => {
+	const { isAuthenticated, setUser } = useAuth();
+	const router = useNavigate();
+	const { mutateAsync: logout } = useMutation({
+		mutationFn: logoutUser,
+		onMutate: () => {
+			toast.loading("logging out", { id: "logout-user" });
+		},
+		onSuccess: (data) => {
+			toast.success(data?.message);
+			toast.dismiss("logout-user");
+			setUser(null);
+			router("/auth/login");
+		},
+		onError: (err) => {
+			toast.error(err.message);
+			toast.dismiss("logout-user");
+		},
+	});
+
 	return (
 		<header className="border-b bg-white/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
 			<div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -47,11 +70,18 @@ const Navbar = () => {
 					<Button variant="ghost" size="icon" className="hidden md:flex">
 						<Search className="h-5 w-5" />
 					</Button>
-					<Link to="/auth/login">
-						<Button variant="ghost" size="icon">
-							<User className="h-5 w-5" />
+					{isAuthenticated ? (
+						<Button variant="ghost" size="icon" onClick={() => logout()}>
+							<LogOut className="h-5 w-5" />
 						</Button>
-					</Link>
+					) : (
+						<Link to="/auth/login">
+							<Button variant="ghost" size="icon">
+								<User className="h-5 w-5" />
+							</Button>
+						</Link>
+					)}
+
 					<Link to="/cart">
 						<Button variant="ghost" size="icon" className="relative">
 							<ShoppingCart className="h-5 w-5" />

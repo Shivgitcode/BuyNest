@@ -11,6 +11,7 @@ export const signup = async (
 	next: NextFunction,
 ) => {
 	try {
+		logger.debug(JSON.stringify(req.body));
 		const parseResult = SignupSchema.safeParse(req.body);
 		if (!parseResult.success) {
 			const validationErrors = parseResult.error.errors.map(
@@ -43,6 +44,7 @@ export const login = async (
 	next: NextFunction,
 ) => {
 	try {
+		logger.debug(JSON.stringify(req.body));
 		const parseResult = LoginSchema.safeParse(req.body);
 		if (!parseResult.success) {
 			const validationErrors = parseResult.error.errors.map((err) => {
@@ -51,7 +53,12 @@ export const login = async (
 			return next(new ErrorHandler(`${validationErrors.join(", ")}`, 400));
 		}
 		const loginData = parseResult.data;
-		const user = await User.findOne({ where: { email: loginData.email } });
+		const user = await User.findOne({
+			where: { email: loginData.email },
+			attributes: {
+				exclude: ["createdAt", "updatedAt"],
+			},
+		});
 		const hashedPass = user?.toJSON().password;
 		const verifyPass = await bcrypt.compare(loginData.password, hashedPass);
 		if (!verifyPass) {
@@ -68,7 +75,7 @@ export const login = async (
 		});
 		res.status(200).json({
 			message: "Logged In Successfully",
-			token,
+			user,
 		});
 	} catch (error) {
 		if (error instanceof Error) next(error);

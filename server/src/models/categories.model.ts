@@ -1,5 +1,4 @@
-import { DataTypes, UUID } from "sequelize";
-import { logger } from "../logger/devLogger";
+import { DataTypes } from "sequelize";
 import { sequelize } from "../sequalize/db";
 
 const Category = sequelize.define("Category", {

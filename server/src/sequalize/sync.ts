@@ -1,7 +1,4 @@
 import { logger } from "../logger/devLogger";
-import Category from "../models/categories.model";
-import Product from "../models/product.model";
-import User from "../models/user.model";
 import { defineAssociations } from "./associations";
 import { sequelize } from "./db";
 const syncDb = async () => {

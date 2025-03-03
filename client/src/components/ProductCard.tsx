@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
@@ -23,12 +24,15 @@ const ProductCard = ({
 	description,
 }: ProductCardProps) => {
 	const [isHovered, setIsHovered] = useState(false);
+	const { isAuthenticated } = useAuth();
 	const navigate = useNavigate();
 
 	const handleAddToCart = (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		navigate("/cart");
+		if (!isAuthenticated) {
+			navigate("/auth/login");
+		}
 	};
 
 	return (

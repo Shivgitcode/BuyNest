@@ -1,14 +1,51 @@
+import { addUser } from "@/actions/addUser";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FormSchema, type FormTypes } from "@/types/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { EyeIcon, EyeOffIcon, UserPlus } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const Signup = () => {
+	const router = useNavigate();
 	const [showPassword, setShowPassword] = useState(false);
-
+	const { mutateAsync: signup } = useMutation({
+		mutationFn: addUser,
+		onMutate: () => {
+			toast.loading("Signing up", { id: "signup-toast" });
+		},
+		onError: (error) => {
+			toast.dismiss("signup-toast");
+			toast.success(error.message || "something went wrong");
+		},
+		onSuccess: (data) => {
+			toast.success(data?.message);
+			toast.dismiss("signup-toast");
+			router("/auth/login");
+		},
+	});
+	const {
+		handleSubmit,
+		register,
+		formState: { errors },
+	} = useForm<FormTypes>({
+		resolver: zodResolver(FormSchema),
+	});
+	const submitForm = async (data: FormTypes) => {
+		console.log(data);
+		signup({
+			username: `${data.firstname} ${data.lastname}`,
+			email: data.email,
+			password: data.password,
+			address: data.address,
+		});
+	};
 	return (
 		<div className="min-h-screen flex flex-col md:flex-row">
 			{/* Left Side - Image */}
@@ -34,13 +71,13 @@ const Signup = () => {
 				<div className="w-full max-w-md">
 					<div className="text-center mb-8">
 						<Link to="/" className="text-2xl font-bold inline-block">
-							StyleStore
+							BuyNest
 						</Link>
 						<h2 className="text-3xl font-bold mt-8 mb-2">Create Account</h2>
 						<p className="text-gray-600">Enter your details to get started</p>
 					</div>
 
-					<form className="space-y-6">
+					<form className="space-y-6" onSubmit={handleSubmit(submitForm)}>
 						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 							<div className="space-y-2">
 								<Label htmlFor="firstName">First Name</Label>
@@ -49,7 +86,11 @@ const Signup = () => {
 									type="text"
 									placeholder="Enter your first name"
 									className="h-12"
+									{...register("firstname", { required: true })}
 								/>
+								<p className="text-xs text-gray-500 mt-1 ">
+									{errors.firstname ? errors.firstname.message : ""}
+								</p>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="lastName">Last Name</Label>
@@ -58,8 +99,12 @@ const Signup = () => {
 									type="text"
 									placeholder="Enter your last name"
 									className="h-12"
+									{...register("lastname", { required: true })}
 								/>
 							</div>
+							<p className="text-xs text-gray-500 mt-1 ">
+								{errors.lastname ? errors.lastname.message : ""}
+							</p>
 						</div>
 
 						<div className="space-y-2">
@@ -69,7 +114,24 @@ const Signup = () => {
 								type="email"
 								placeholder="Enter your email"
 								className="h-12"
+								{...register("email", { required: true })}
 							/>
+							<p className="text-xs text-gray-500 mt-1 ">
+								{errors.email ? errors.email.message : ""}
+							</p>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="email">address</Label>
+							<Input
+								id="address"
+								type="text"
+								placeholder="Enter your "
+								className="h-12"
+								{...register("address", { required: true })}
+							/>
+							<p className="text-xs text-gray-500 mt-1 ">
+								{errors.address ? errors.address.message : ""}
+							</p>
 						</div>
 
 						<div className="space-y-2">
@@ -80,6 +142,7 @@ const Signup = () => {
 									type={showPassword ? "text" : "password"}
 									placeholder="Create a password"
 									className="h-12 pr-10"
+									{...register("password", { required: true })}
 								/>
 								<button
 									type="button"
@@ -93,9 +156,8 @@ const Signup = () => {
 									)}
 								</button>
 							</div>
-							<p className="text-xs text-gray-500 mt-1">
-								Password must be at least 8 characters long and include a number
-								and a special character.
+							<p className="text-xs text-gray-500 mt-1 ">
+								{errors.password ? errors.password.message : ""}
 							</p>
 						</div>
 
