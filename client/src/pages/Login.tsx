@@ -8,7 +8,7 @@ import { type LoginProps, LoginSchema, type User } from "@/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { EyeIcon, EyeOffIcon, LogIn } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -34,11 +34,11 @@ const Login = () => {
 		},
 	});
 
-	// useEffect(() => {
-	// 	if (user) {
-	// 		router("/");
-	// 	}
-	// }, [user, router]);
+	useEffect(() => {
+		if (user) {
+			router("/");
+		}
+	}, [user, router]);
 
 	const {
 		handleSubmit,

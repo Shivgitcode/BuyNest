@@ -15,7 +15,8 @@ export const getProducts = async (
 	next: NextFunction,
 ) => {
 	try {
-		const id = req.params.categoryId;
+		const categoryName = req.params.categoryId;
+		const id = category.get(categoryName);
 
 		const getProducts = await Category.findOne({
 			where: { id },
@@ -28,6 +29,27 @@ export const getProducts = async (
 		});
 	} catch (error) {
 		if (error instanceof Error) next(error.message);
+	}
+};
+
+export const getAllProducts = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const allProducts = await Product.findAll({
+			attributes: {
+				exclude: ["desc", "createdAt", "updatedAt", "categoryId", "CategoryId"],
+			},
+		});
+
+		res.status(200).json({
+			message: "all products",
+			data: allProducts,
+		});
+	} catch (error) {
+		next(error);
 	}
 };
 
@@ -154,3 +176,22 @@ export async function getFeaturedProducts(
 		next(error);
 	}
 }
+
+export const getOneProduct = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const id = req.params.productId;
+		const findProduct = await Product.findOne({
+			where: { id },
+		});
+		res.status(200).json({
+			message: "all products",
+			data: findProduct,
+		});
+	} catch (error) {
+		next(error);
+	}
+};

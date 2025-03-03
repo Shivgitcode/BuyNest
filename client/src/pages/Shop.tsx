@@ -13,6 +13,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
+import useFetchProducts from "@/hooks/useFetchProducts";
 import { productsData } from "@/utils/data";
 // Sample electronics products data
 
@@ -20,11 +21,12 @@ const Shop = () => {
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const productsPerPage = 8;
+	const { productData, isLoading } = useFetchProducts();
 
 	// Calculate pagination
 	const indexOfLastProduct = currentPage * productsPerPage;
 	const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-	const currentProducts = productsData.slice(
+	const currentProducts = productData?.slice(
 		indexOfFirstProduct,
 		indexOfLastProduct,
 	);
@@ -89,16 +91,14 @@ const Shop = () => {
 
 							{/* Products */}
 							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-								{currentProducts.map((product) => (
+								{currentProducts?.map((el) => (
 									<ProductCard
-										key={product.id}
-										id={product.id}
-										name={product.name}
-										price={product.price}
-										image={product.image}
-										category={product.category}
-										rating={product.rating}
-										description={product.description}
+										key={el.id}
+										id={el.id}
+										name={el.product}
+										price={el.price}
+										image={el.image}
+										description={el.desc}
 									/>
 								))}
 							</div>

@@ -1,6 +1,7 @@
 import { logoutUser } from "@/actions/logoutUser";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 import { useMutation } from "@tanstack/react-query";
 import { LogOut, Search, ShoppingCart, User } from "lucide-react";
 import { Link, useNavigate } from "react-router";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 const Navbar = () => {
 	const { isAuthenticated, setUser } = useAuth();
 	const router = useNavigate();
+	const { cart } = useCart();
 	const { mutateAsync: logout } = useMutation({
 		mutationFn: logoutUser,
 		onMutate: () => {
@@ -86,7 +88,7 @@ const Navbar = () => {
 						<Button variant="ghost" size="icon" className="relative">
 							<ShoppingCart className="h-5 w-5" />
 							<span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-black text-white text-[10px] flex items-center justify-center">
-								2
+								{cart.length}
 							</span>
 						</Button>
 					</Link>

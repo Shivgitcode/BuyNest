@@ -1,5 +1,10 @@
+import { addToCart } from "@/actions/addToCart";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
+import useFetchProducts from "@/hooks/useFetchProducts";
+import type { ProductProps } from "@/types/types";
+import { useMutation } from "@tanstack/react-query";
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
@@ -25,14 +30,24 @@ const ProductCard = ({
 }: ProductCardProps) => {
 	const [isHovered, setIsHovered] = useState(false);
 	const { isAuthenticated } = useAuth();
+	const { setCartItems } = useCart();
 	const navigate = useNavigate();
+	const { productData } = useFetchProducts();
+	const { mutateAsync: addInCart } = useMutation({
+		mutationFn: addToCart,
+		onSuccess: (data) => {
+			setCartItems(data as ProductProps[]);
+		},
+	});
 
-	const handleAddToCart = (e: React.MouseEvent) => {
+	const handleAddToCart = (e: React.MouseEvent, id: string) => {
 		e.preventDefault();
 		e.stopPropagation();
 		if (!isAuthenticated) {
 			navigate("/auth/login");
 		}
+		const oneProduct = productData?.find((el) => el.id === id);
+		addInCart(oneProduct as ProductProps);
 	};
 
 	return (
@@ -87,7 +102,7 @@ const ProductCard = ({
 					<Button
 						size="sm"
 						className="cart-btn bg-blue-600 hover:bg-blue-700 text-white"
-						onClick={handleAddToCart}
+						onClick={(e) => handleAddToCart(e, id)}
 					>
 						<ShoppingCart className="h-4 w-4 mr-1" />
 						<span className="text-xs">Add</span>

@@ -73,7 +73,8 @@ export const products = [
 ];
 
 export const category = new Map();
+category.set("All-Products", "all-products");
 category.set("electronics", "777e2fc5-3e2a-4de7-99a2-55c454e1d604");
-category.set("lightining", "777e2fc5-3e2a-4de7-99a2-55c454e1d604");
-category.set("audio", "777e2fc5-3e2a-4de7-99a2-55c454e1d604");
-category.set("home", "777e2fc5-3e2a-4de7-99a2-55c454e1d604");
+category.set("lightining", "0342b892-aa00-43ee-81bd-5ce0a39c2747");
+category.set("audio", "6964181e-1f77-4df5-91f9-607c8298fa82");
+category.set("home", "6740e24f-26dd-4b37-8fb0-734673f839db");

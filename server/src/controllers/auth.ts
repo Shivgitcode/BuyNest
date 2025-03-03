@@ -59,6 +59,10 @@ export const login = async (
 				exclude: ["createdAt", "updatedAt"],
 			},
 		});
+		if (!user) {
+			next(new ErrorHandler("User do not Exist , SignUp First", 404));
+		}
+		logger.debug(user?.toJSON());
 		const hashedPass = user?.toJSON().password;
 		const verifyPass = await bcrypt.compare(loginData.password, hashedPass);
 		if (!verifyPass) {

@@ -5,12 +5,12 @@ import User from "../models/user.model";
 
 export const defineAssociations = () => {
 	Category.hasMany(Product, {
-		foreignKey: "CategoryId",
+		foreignKey: "categoryId",
 		onDelete: "CASCADE",
 	});
 
 	Product.belongsTo(Category, {
-		foreignKey: "CategoryId",
+		foreignKey: "categoryId",
 	});
 
 	User.hasMany(CartItem, {

@@ -9,6 +9,7 @@ export async function loginUser(
 		const res = await api.post("/login", data);
 		return res.data;
 	} catch (error) {
-		if (error instanceof AxiosError) throw error;
+		if (error instanceof AxiosError)
+			throw new Error(error.response?.data.error);
 	}
 }

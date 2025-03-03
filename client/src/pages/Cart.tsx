@@ -2,21 +2,18 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { cartItems } from "@/utils/data";
+import { useCart } from "@/context/CartContext";
 import { MinusCircle, PlusCircle, ShoppingBag, Trash2 } from "lucide-react";
-import { useState } from "react";
 import { Link } from "react-router";
 
 // Sample electronics cart data
 
 const Cart = () => {
-	const [items, setItems] = useState(cartItems);
+	const { cart } = useCart();
+	console.log(cart);
 
 	// Calculate cart totals
-	const subtotal = items.reduce(
-		(total, item) => total + item.price * item.quantity,
-		0,
-	);
+	const subtotal = cart.reduce((total, item) => total + item.price * 1, 0);
 	const shipping = subtotal > 0 ? 12.99 : 0;
 	const tax = subtotal * 0.08;
 	const total = subtotal + shipping + tax;
@@ -29,7 +26,7 @@ const Cart = () => {
 				<div className="container mx-auto px-4">
 					<h1 className="text-3xl font-bold mb-8">Your Tech Cart</h1>
 
-					{items.length > 0 ? (
+					{cart.length > 0 ? (
 						<div className="flex flex-col lg:flex-row gap-8">
 							{/* Cart Items */}
 							<div className="flex-grow lg:w-2/3">
@@ -43,7 +40,7 @@ const Cart = () => {
 
 									<Separator className="mb-4 md:hidden" />
 
-									{items.map((item) => (
+									{cart.map((item) => (
 										<div key={item.id} className="mb-6">
 											<div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
 												{/* Product Info */}
@@ -52,14 +49,14 @@ const Cart = () => {
 														<div className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden bg-gray-100">
 															<img
 																src={item.image}
-																alt={item.name}
+																alt={item.product}
 																className="w-full h-full object-contain"
 															/>
 														</div>
 														<div className="flex flex-col">
-															<h3 className="font-medium">{item.name}</h3>
+															<h3 className="font-medium">{item.product}</h3>
 															<div className="text-sm text-gray-500 mt-1">
-																<span>Options: {item.options}</span>
+																{/* <span>Options: {item.options}</span> */}
 															</div>
 															<button
 																type="button"
@@ -92,9 +89,7 @@ const Cart = () => {
 														>
 															<MinusCircle className="h-5 w-5" />
 														</button>
-														<span className="mx-2 w-6 text-center">
-															{item.quantity}
-														</span>
+														<span className="mx-2 w-6 text-center">{1}</span>
 														<button
 															type="button"
 															className="text-gray-500 hover:text-gray-700"
@@ -109,7 +104,7 @@ const Cart = () => {
 													<div className="md:hidden text-sm font-medium text-gray-500">
 														Total:
 													</div>
-													<div>${(item.price * item.quantity).toFixed(2)}</div>
+													<div>${(item.price * 1).toFixed(2)}</div>
 												</div>
 
 												{/* Remove - Desktop */}

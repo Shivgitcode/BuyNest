@@ -28,7 +28,7 @@ const Product = sequelize.define("Product", {
 			model: "Categories",
 			key: "id",
 		},
-		field: "CategoryId",
+		field: "categoryId",
 	},
 });
 export default Product;
