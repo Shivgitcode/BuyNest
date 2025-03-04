@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../ErrorHandler/error";
 import { verifyToken } from "../utils/tokenGenerator";
 import type { SignUp } from "../utils/types";
+import { logger } from "../logger/devLogger";
 
 declare global {
 	namespace Express {
@@ -17,6 +18,7 @@ export const checkAuth = async (
 ) => {
 	try {
 		const token = req.cookies.jwt;
+		logger.debug(token);
 
 		const isToken = await verifyToken(token);
 		if (!isToken) {

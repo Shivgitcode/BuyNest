@@ -35,6 +35,7 @@ const Login = () => {
 	});
 
 	useEffect(() => {
+		console.log(user, "inside user");
 		if (user) {
 			router("/");
 		}

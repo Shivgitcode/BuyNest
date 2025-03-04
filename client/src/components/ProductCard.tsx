@@ -2,12 +2,14 @@ import { addToCart } from "@/actions/addToCart";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import useFetchCart from "@/hooks/use-fetchCart";
 import useFetchProducts from "@/hooks/useFetchProducts";
 import type { ProductProps } from "@/types/types";
 import { useMutation } from "@tanstack/react-query";
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 interface ProductCardProps {
 	id: string; // Updated to UUID string type
@@ -36,7 +38,13 @@ const ProductCard = ({
 	const { mutateAsync: addInCart } = useMutation({
 		mutationFn: addToCart,
 		onSuccess: (data) => {
-			setCartItems(data as ProductProps[]);
+			toast.success("item added to cart");
+			setCartItems((prev) => {
+				return [...prev, data];
+			});
+		},
+		onError: (error) => {
+			toast.error(error.message);
 		},
 	});
 

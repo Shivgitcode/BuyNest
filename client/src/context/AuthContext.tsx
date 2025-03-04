@@ -26,7 +26,9 @@ export default function AuthContextWrapper({
 	const fetchUser = async () => {
 		try {
 			const res = await api.get("/auth/user", { withCredentials: true });
+
 			if (res.data) {
+				console.log(res.data, "hello");
 				setUser(res.data?.user);
 			}
 		} catch (error) {
@@ -34,7 +36,7 @@ export default function AuthContextWrapper({
 		}
 	};
 	useEffect(() => {
-		fetchUser;
+		fetchUser();
 	}, []);
 	return (
 		<AuthContext.Provider

@@ -44,6 +44,11 @@ export type ProductProps = {
 	desc: string;
 	image: string;
 	price: number;
+	quantity: number;
+	Category: {
+		id: string;
+		category: string;
+	};
 };
 
 export type CartProps = {
@@ -51,5 +56,5 @@ export type CartProps = {
 	quantity: number;
 	userId: string;
 	productId: string;
-	product: ProductProps;
+	Product: ProductProps;
 };

@@ -39,6 +39,12 @@ export const getAllProducts = async (
 ) => {
 	try {
 		const allProducts = await Product.findAll({
+			include: {
+				model: Category,
+				attributes: {
+					exclude: ["createdAt", "updatedAt"],
+				},
+			},
 			attributes: {
 				exclude: ["desc", "createdAt", "updatedAt", "categoryId", "CategoryId"],
 			},
@@ -99,14 +105,27 @@ export const addToCart = async (
 		console.log(id);
 		logger.debug(id as string, { file: "products.ts" });
 		const { productId, quantity } = req.body;
-		const addInCart = await CartItem.create({
-			productId,
-			userId: id,
-			quantity,
+		const addInCart = await CartItem.create(
+			{
+				productId,
+				userId: id as string,
+				quantity,
+			},
+			{
+				include: {
+					model: Product,
+				},
+			},
+		);
+		const cartItemWithProduct = await CartItem.findOne({
+			where: { id: addInCart.id },
+			include: {
+				model: Product,
+			},
 		});
 		res.status(200).json({
 			message: "product added to Cart",
-			data: addInCart,
+			data: cartItemWithProduct,
 		});
 	} catch (error) {
 		if (error instanceof Error) next(error);

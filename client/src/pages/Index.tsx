@@ -13,7 +13,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 const Index = () => {
-	const [isLoaded, setIsLoaded] = useState(false);
+	const [isLoaded, setIsLoaded] = useState(true);
 	const {
 		data: productsData,
 		isError,
@@ -38,7 +38,9 @@ const Index = () => {
 					<div className="absolute inset-0 bg-black/30" />
 					<div className="container mx-auto px-4 h-full flex items-center relative z-10">
 						<div
-							className={`hero-content max-w-md text-white transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+							className={
+								"hero-content max-w-md text-white transition-opacity duration-500 "
+							}
 						>
 							<span className="inline-block px-3 py-1 bg-white/10 backdrop-blur-sm text-white text-sm font-medium tracking-wider uppercase rounded mb-4">
 								New Collection

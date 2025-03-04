@@ -98,6 +98,7 @@ const Shop = () => {
 										name={el.product}
 										price={el.price}
 										image={el.image}
+										category={el.Category.category}
 										description={el.desc}
 									/>
 								))}

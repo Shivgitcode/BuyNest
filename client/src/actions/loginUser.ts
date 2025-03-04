@@ -6,7 +6,9 @@ export async function loginUser(
 	data: LoginProps,
 ): Promise<ResponseProps | undefined> {
 	try {
-		const res = await api.post("/login", data);
+		const res = await api.post("/login", data, {
+			withCredentials: true,
+		});
 		return res.data;
 	} catch (error) {
 		if (error instanceof AxiosError)

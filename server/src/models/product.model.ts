@@ -1,7 +1,27 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../sequalize/db";
+// Define the attributes of the Product model
+interface ProductAttributes {
+	id: string;
+	product: string;
+	desc: string;
+	image?: string; // Optional field
+	price: number;
+	categoryId: string;
+}
 
-const Product = sequelize.define("Product", {
+// Define the creation attributes (fields that can be omitted when creating a new instance)
+interface ProductCreationAttributes {
+	product: string;
+	desc: string;
+	image?: string;
+	price: number;
+	categoryId: string;
+}
+
+const Product = sequelize.define<
+	Model<ProductAttributes | ProductCreationAttributes>
+>("Product", {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

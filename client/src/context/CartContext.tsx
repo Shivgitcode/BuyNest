@@ -1,9 +1,9 @@
-import type { ProductProps } from "@/types/types";
+import type { CartProps, ProductProps } from "@/types/types";
 import { type ReactNode, createContext, useContext, useState } from "react";
 
 interface CartContextProps {
-	cart: ProductProps[];
-	setCartItems: (cart: ProductProps[]) => void;
+	cart: CartProps[];
+	setCartItems: (cart: CartProps[]) => void;
 }
 
 const CartContext = createContext<CartContextProps | null>(null);
@@ -11,7 +11,7 @@ const CartContext = createContext<CartContextProps | null>(null);
 export default function CartContextWrapper({
 	children,
 }: { children: ReactNode }) {
-	const [cart, setCartItems] = useState<ProductProps[]>([]);
+	const [cart, setCartItems] = useState<CartProps[]>([]);
 
 	return (
 		<CartContext.Provider value={{ cart, setCartItems }}>

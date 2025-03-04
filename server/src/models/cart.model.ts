@@ -1,7 +1,22 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, type Model } from "sequelize";
 import { sequelize } from "../sequalize/db";
 
-const CartItem = sequelize.define("Cart", {
+interface CartItemAttributes {
+	id: string;
+	quantity: number | null;
+	productId: string;
+	userId: string;
+}
+
+interface CartItemCreationAttributes {
+	quantity?: number;
+	productId: string;
+	userId: string;
+}
+
+const CartItem = sequelize.define<
+	Model<CartItemAttributes, CartItemCreationAttributes>
+>("Cart", {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

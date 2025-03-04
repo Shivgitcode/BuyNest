@@ -3,17 +3,27 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/CartContext";
+import useFetchCart from "@/hooks/use-fetchCart";
 import { MinusCircle, PlusCircle, ShoppingBag, Trash2 } from "lucide-react";
+import { useLayoutEffect } from "react";
 import { Link } from "react-router";
 
 // Sample electronics cart data
 
 const Cart = () => {
 	const { cart } = useCart();
-	console.log(cart);
+	const { updateCart } = useFetchCart();
+
+	console.log(cart, "hello");
+	useLayoutEffect(() => {
+		updateCart();
+	});
 
 	// Calculate cart totals
-	const subtotal = cart.reduce((total, item) => total + item.price * 1, 0);
+	const subtotal = cart.reduce(
+		(total, item) => total + item.Product.price * 1,
+		0,
+	);
 	const shipping = subtotal > 0 ? 12.99 : 0;
 	const tax = subtotal * 0.08;
 	const total = subtotal + shipping + tax;
@@ -48,13 +58,15 @@ const Cart = () => {
 													<div className="flex items-center space-x-4">
 														<div className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden bg-gray-100">
 															<img
-																src={item.image}
-																alt={item.product}
+																src={item.Product.image}
+																alt={item.Product.product}
 																className="w-full h-full object-contain"
 															/>
 														</div>
 														<div className="flex flex-col">
-															<h3 className="font-medium">{item.product}</h3>
+															<h3 className="font-medium">
+																{item.Product.product}
+															</h3>
 															<div className="text-sm text-gray-500 mt-1">
 																{/* <span>Options: {item.options}</span> */}
 															</div>
@@ -74,7 +86,7 @@ const Cart = () => {
 													<div className="md:hidden text-sm font-medium text-gray-500">
 														Price:
 													</div>
-													<div>${item.price.toFixed(2)}</div>
+													<div>${item.Product.price.toFixed(2)}</div>
 												</div>
 
 												{/* Quantity */}
@@ -104,7 +116,7 @@ const Cart = () => {
 													<div className="md:hidden text-sm font-medium text-gray-500">
 														Total:
 													</div>
-													<div>${(item.price * 1).toFixed(2)}</div>
+													<div>${(item.Product.price * 1).toFixed(2)}</div>
 												</div>
 
 												{/* Remove - Desktop */}
