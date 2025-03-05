@@ -1,14 +1,14 @@
 import { DataTypes, type Model } from "sequelize";
 import { sequelize } from "../sequalize/db";
-
-interface CartItemAttributes {
+export interface CartItemAttributes {
 	id: string;
 	quantity: number | null;
 	productId: string;
 	userId: string;
 }
 
-interface CartItemCreationAttributes {
+export interface CartItemCreationAttributes {
+	id?: string;
 	quantity?: number;
 	productId: string;
 	userId: string;

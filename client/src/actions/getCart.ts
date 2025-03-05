@@ -1,6 +1,6 @@
 import { api } from "@/api/axios";
 import type { CartProps } from "@/types/types";
-import { Axios, AxiosError } from "axios";
+import { AxiosError } from "axios";
 
 export const getCartItems = async (): Promise<CartProps[] | undefined> => {
 	try {

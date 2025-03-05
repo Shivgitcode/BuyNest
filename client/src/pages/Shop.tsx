@@ -13,6 +13,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
+import Spinner from "@/components/Spinner";
 import useFetchProducts from "@/hooks/useFetchProducts";
 import { productsData } from "@/utils/data";
 // Sample electronics products data
@@ -21,7 +22,7 @@ const Shop = () => {
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const productsPerPage = 8;
-	const { productData, isLoading } = useFetchProducts();
+	const { productData, isLoading, isFetching } = useFetchProducts();
 
 	// Calculate pagination
 	const indexOfLastProduct = currentPage * productsPerPage;
@@ -90,19 +91,27 @@ const Shop = () => {
 							</div>
 
 							{/* Products */}
-							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-								{currentProducts?.map((el) => (
-									<ProductCard
-										key={el.id}
-										id={el.id}
-										name={el.product}
-										price={el.price}
-										image={el.image}
-										category={el.Category.category}
-										description={el.desc}
-									/>
-								))}
-							</div>
+							{isFetching ? (
+								<Spinner />
+							) : currentProducts?.length === 0 ? (
+								<div className="text-[#004B91] font font-medium w-full flex items-center h-[300px] justify-center">
+									Sorry We Don't have Products in this category
+								</div>
+							) : (
+								<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+									{currentProducts?.map((el) => (
+										<ProductCard
+											key={el.id}
+											id={el.id}
+											name={el.product}
+											price={el.price}
+											image={el.image}
+											category={el.Category.category}
+											description={el.desc}
+										/>
+									))}
+								</div>
+							)}
 
 							{/* Pagination */}
 							<div className="mt-12 flex justify-center">

@@ -41,3 +41,25 @@ export const fileSchema = z.object({
 
 // Type definition from the schema
 type FileType = z.infer<typeof fileSchema>;
+
+export interface ProductData {
+	id: string;
+	product: string;
+	price: number;
+	image: string;
+}
+
+export interface CartItemResult {
+	productId: string;
+	totalQuantity: number;
+	Product: ProductData;
+}
+
+export interface RawQueryResult {
+	productId: string;
+	totalQuantity: string;
+	product_id: string;
+	product_name: string;
+	product_price: number;
+	product_image: string;
+}

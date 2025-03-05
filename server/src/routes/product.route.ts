@@ -8,6 +8,7 @@ import {
 	getFeaturedProducts,
 	getOneProduct,
 	getProducts,
+	getProductsByCategory,
 } from "../controllers/products";
 import { checkAuth } from "../middleware/auth.middleware";
 
@@ -19,5 +20,6 @@ productRouter.get("/products/featured", getFeaturedProducts);
 productRouter.get("/products/cart", checkAuth, getCartItems);
 productRouter.post("/products/cart", checkAuth, addToCart);
 productRouter.post("/products", checkAuth, addProduct);
+productRouter.post("/products/filter/category", getProductsByCategory);
 productRouter.get("/products/:category", getProducts);
 productRouter.get("/product/:productId", getOneProduct);

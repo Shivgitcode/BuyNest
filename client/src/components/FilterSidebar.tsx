@@ -9,21 +9,44 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import useFetchCategory from "@/hooks/useFetchCategory";
+import { useFilter } from "@/store/filter-store";
+import { useQueryClient } from "@tanstack/react-query";
 import CategorySkeleton from "./CategorySkeleton";
+import Spinner from "./Spinner";
 
 interface FilterSidebarProps {
 	isOpen?: boolean;
 }
 
 const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
-	const { isError, isFetching, isLoading, categories } = useFetchCategory();
-	return (
+	const { isFetching, isLoading, categories } = useFetchCategory();
+	const queryClient = useQueryClient();
+
+	const { filterCategories, setFilterCategories, setNullFilter } = useFilter(
+		(state) => state,
+	);
+
+	const handleFilter = (category: string) => {
+		setFilterCategories(category);
+
+		queryClient.invalidateQueries({
+			queryKey: ["product", [...filterCategories]],
+		});
+	};
+
+	return isLoading ? (
+		<Spinner />
+	) : (
 		<div
 			className={`bg-white p-4 rounded-lg ${isOpen ? "block" : "hidden md:block"}`}
 		>
 			<div className="flex justify-between items-center mb-4">
 				<h3 className="font-medium text-lg">Filters</h3>
-				<Button variant="ghost" size="sm">
+				<Button
+					variant="ghost"
+					size="sm"
+					onClick={() => setNullFilter()} // Clear all selected categories
+				>
 					Clear all
 				</Button>
 			</div>
@@ -76,7 +99,12 @@ const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 							{!isFetching ? (
 								categories?.map((el) => (
 									<div key={el.id} className="flex items-center space-x-2">
-										<Checkbox id={`category-${el.category}`} />
+										<Checkbox
+											id={`category-${el.category}`}
+											value={el.category}
+											checked={filterCategories.includes(el.category)}
+											onCheckedChange={() => handleFilter(el.category)}
+										/>
 										<Label
 											htmlFor={`category-${el.category}`}
 											className="text-sm"

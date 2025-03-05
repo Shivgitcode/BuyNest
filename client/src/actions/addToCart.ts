@@ -1,10 +1,10 @@
 import { api } from "@/api/axios";
-import type { ProductProps } from "@/types/types";
+import type { CartProps, ProductProps } from "@/types/types";
 
 export const addToCart = async (
 	data: ProductProps,
 	number?: number,
-): Promise<ProductProps[] | undefined> => {
+): Promise<CartProps | undefined> => {
 	try {
 		const quantity = number || 1;
 		const cartItems: ProductProps[] = [];
@@ -20,7 +20,7 @@ export const addToCart = async (
 			},
 		);
 		console.log(res.data);
-		return res.data.data.Product;
+		return res.data.data;
 	} catch (error) {
 		if (error instanceof Error) throw error;
 	}

@@ -1,32 +1,26 @@
+import CartEmpty from "@/components/CartComponents/CartEmpty";
+import CartItemCard from "@/components/CartComponents/CartItemCard";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useCart } from "@/context/CartContext";
 import useFetchCart from "@/hooks/use-fetchCart";
-import { MinusCircle, PlusCircle, ShoppingBag, Trash2 } from "lucide-react";
-import { useLayoutEffect } from "react";
+import { ShoppingBag } from "lucide-react";
 import { Link } from "react-router";
 
 // Sample electronics cart data
 
 const Cart = () => {
-	const { cart } = useCart();
-	const { updateCart } = useFetchCart();
-
-	console.log(cart, "hello");
-	useLayoutEffect(() => {
-		updateCart();
-	});
+	const { cart } = useFetchCart();
 
 	// Calculate cart totals
-	const subtotal = cart.reduce(
-		(total, item) => total + item.Product.price * 1,
+	const subtotal = cart?.reduce(
+		(total, item) => total + item.Product.price * item.totalQuantity,
 		0,
 	);
-	const shipping = subtotal > 0 ? 12.99 : 0;
-	const tax = subtotal * 0.08;
-	const total = subtotal + shipping + tax;
+	const shipping = (subtotal as number) > 0 ? 12.99 : 0;
+	const tax = (subtotal as number) * 0.08;
+	const total = (subtotal as number) + shipping + tax;
 
 	return (
 		<div className="min-h-screen flex flex-col">
@@ -36,7 +30,7 @@ const Cart = () => {
 				<div className="container mx-auto px-4">
 					<h1 className="text-3xl font-bold mb-8">Your Tech Cart</h1>
 
-					{cart.length > 0 ? (
+					{(cart?.length as number) > 0 ? (
 						<div className="flex flex-col lg:flex-row gap-8">
 							{/* Cart Items */}
 							<div className="flex-grow lg:w-2/3">
@@ -50,87 +44,8 @@ const Cart = () => {
 
 									<Separator className="mb-4 md:hidden" />
 
-									{cart.map((item) => (
-										<div key={item.id} className="mb-6">
-											<div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-												{/* Product Info */}
-												<div className="col-span-1 md:col-span-6">
-													<div className="flex items-center space-x-4">
-														<div className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden bg-gray-100">
-															<img
-																src={item.Product.image}
-																alt={item.Product.product}
-																className="w-full h-full object-contain"
-															/>
-														</div>
-														<div className="flex flex-col">
-															<h3 className="font-medium">
-																{item.Product.product}
-															</h3>
-															<div className="text-sm text-gray-500 mt-1">
-																{/* <span>Options: {item.options}</span> */}
-															</div>
-															<button
-																type="button"
-																className="flex items-center text-sm text-gray-500 hover:text-red-500 transition-colors mt-2 md:hidden"
-															>
-																<Trash2 className="h-4 w-4 mr-1" />
-																Remove
-															</button>
-														</div>
-													</div>
-												</div>
-
-												{/* Price */}
-												<div className="col-span-1 md:col-span-2 text-left md:text-center">
-													<div className="md:hidden text-sm font-medium text-gray-500">
-														Price:
-													</div>
-													<div>${item.Product.price.toFixed(2)}</div>
-												</div>
-
-												{/* Quantity */}
-												<div className="col-span-1 md:col-span-2 text-left md:text-center">
-													<div className="md:hidden text-sm font-medium text-gray-500">
-														Quantity:
-													</div>
-													<div className="flex items-center justify-start md:justify-center">
-														<button
-															type="button"
-															className="text-gray-500 hover:text-gray-700"
-														>
-															<MinusCircle className="h-5 w-5" />
-														</button>
-														<span className="mx-2 w-6 text-center">{1}</span>
-														<button
-															type="button"
-															className="text-gray-500 hover:text-gray-700"
-														>
-															<PlusCircle className="h-5 w-5" />
-														</button>
-													</div>
-												</div>
-
-												{/* Total */}
-												<div className="col-span-1 md:col-span-2 text-left md:text-center font-medium">
-													<div className="md:hidden text-sm font-medium text-gray-500">
-														Total:
-													</div>
-													<div>${(item.Product.price * 1).toFixed(2)}</div>
-												</div>
-
-												{/* Remove - Desktop */}
-												<div className="hidden md:block">
-													<button
-														type="button"
-														className="text-gray-400 hover:text-red-500 transition-colors"
-													>
-														<Trash2 className="h-5 w-5" />
-													</button>
-												</div>
-											</div>
-											<Separator className="mt-6" />
-										</div>
+									{cart?.map((item) => (
+										<CartItemCard key={item.id} item={item} />
 									))}
 
 									<div className="flex justify-between items-center mt-6">
@@ -156,7 +71,7 @@ const Cart = () => {
 										<div className="flex justify-between">
 											<span className="text-gray-600">Subtotal</span>
 											<span className="font-medium">
-												${subtotal.toFixed(2)}
+												${subtotal?.toFixed(2)}
 											</span>
 										</div>
 										<div className="flex justify-between">
@@ -187,53 +102,11 @@ const Cart = () => {
 										<ShoppingBag className="mr-2 h-5 w-5" />
 										Proceed to Checkout
 									</Button>
-
-									<div className="mt-6 p-4 bg-gray-50 rounded-md">
-										<h3 className="font-medium mb-2">Have a promo code?</h3>
-										<div className="flex">
-											<input
-												type="text"
-												className="flex-grow border rounded-l-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-												placeholder="Enter code"
-											/>
-											<Button
-												variant="outline"
-												className="rounded-l-none border-l-0"
-											>
-												Apply
-											</Button>
-										</div>
-									</div>
-								</div>
-
-								<div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-									<h3 className="font-medium mb-3">Accepted Payment Methods</h3>
-									<div className="flex gap-2">
-										<div className="w-12 h-8 bg-gray-200 rounded-md" />
-										<div className="w-12 h-8 bg-gray-200 rounded-md" />
-										<div className="w-12 h-8 bg-gray-200 rounded-md" />
-										<div className="w-12 h-8 bg-gray-200 rounded-md" />
-									</div>
 								</div>
 							</div>
 						</div>
 					) : (
-						<div className="bg-white rounded-lg shadow-sm p-16 text-center">
-							<div className="flex justify-center mb-6">
-								<ShoppingBag className="h-16 w-16 text-gray-300" />
-							</div>
-							<h2 className="text-2xl font-semibold mb-2">
-								Your tech cart is empty
-							</h2>
-							<p className="text-gray-500 mb-8">
-								Looks like you haven't added any gadgets to your cart yet.
-							</p>
-							<Link to="/shop">
-								<Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-									Browse Electronics
-								</Button>
-							</Link>
-						</div>
+						<CartEmpty />
 					)}
 				</div>
 			</main>

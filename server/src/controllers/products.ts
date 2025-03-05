@@ -1,13 +1,15 @@
 import type { NextFunction, Request, Response } from "express";
+import { Op, QueryTypes } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import ErrorHandler from "../ErrorHandler/error";
 import { logger } from "../logger/devLogger";
 import CartItem from "../models/cart.model";
 import Category from "../models/categories.model";
 import Product from "../models/product.model";
+import { sequelize } from "../sequalize/db";
 import { putImage, signedUrl } from "../utils/aws";
 import { category } from "../utils/data";
-import { ProductSchema } from "../utils/types";
+import { ProductSchema, type RawQueryResult } from "../utils/types";
 
 export const getProducts = async (
 	req: Request,
@@ -100,16 +102,14 @@ export const addToCart = async (
 	next: NextFunction,
 ) => {
 	try {
-		console.log(req.user?.id);
 		const id = req.user?.id;
-		console.log(id);
 		logger.debug(id as string, { file: "products.ts" });
 		const { productId, quantity } = req.body;
 		const addInCart = await CartItem.create(
 			{
 				productId,
 				userId: id as string,
-				quantity,
+				quantity: quantity as number,
 			},
 			{
 				include: {
@@ -139,17 +139,46 @@ export const getCartItems = async (
 ) => {
 	try {
 		const id = req.user?.id;
-		console.log(id);
-		const getProducts = await CartItem.findAll({
-			where: { userId: id },
-			include: Product,
+
+		const query = `
+      SELECT 
+        "Carts"."productId",
+        SUM("Carts"."quantity") as "totalQuantity",
+        "Products"."id" as "product_id",
+        "Products"."product" as "product_name",
+        "Products"."price" as "product_price",
+        "Products"."image" as "product_image"
+      FROM "Carts"
+      JOIN "Products" ON "Carts"."productId" = "Products"."id"
+      WHERE "Carts"."userId" = :userId
+      GROUP BY "Carts"."productId", "Products"."id", "Products"."product", "Products"."price", "Products"."image"
+      ORDER BY MAX("Carts"."createdAt") DESC
+    `;
+
+		const results = await sequelize.query<RawQueryResult>(query, {
+			replacements: { userId: id },
+			type: QueryTypes.SELECT,
 		});
+
+		const formattedResults = results.map((item) => ({
+			productId: item.productId,
+			totalQuantity: Number.parseInt(item.totalQuantity),
+			Product: {
+				id: item.product_id,
+				product: item.product_name,
+				price: item.product_price,
+				image: item.product_image,
+			},
+		}));
+
 		res.status(200).json({
 			message: "cart items",
-			data: getProducts,
+			data: formattedResults,
 		});
 	} catch (error) {
+		console.error("Error fetching cart items:", error);
 		if (error instanceof Error) next(error);
+		else next(new Error("Unknown error occurred"));
 	}
 };
 
@@ -212,5 +241,47 @@ export const getOneProduct = async (
 		});
 	} catch (error) {
 		next(error);
+	}
+};
+
+export const getProductsByCategory = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const names: string[] = req.body.categories;
+		console.log(names);
+		const ids = names.map((el) => category.get(el));
+
+		const findProductsByCategory = await Product.findAll({
+			where: {
+				categoryId: {
+					[Op.in]: ids,
+				},
+			},
+			include: {
+				model: Category,
+				attributes: {
+					exclude: ["createdAt", "updatedAt"],
+				},
+			},
+			attributes: {
+				exclude: ["createdAt", "updatedAt"],
+			},
+		});
+		if (!findProductsByCategory) {
+			res.status(404).json({
+				message: "product fetched",
+				data: findProductsByCategory,
+			});
+			return;
+		}
+		res.status(200).json({
+			message: "product fetched",
+			data: findProductsByCategory,
+		});
+	} catch (error) {
+		if (error instanceof Error) next(error);
 	}
 };

@@ -14,11 +14,13 @@ export const getAllProducts = async (): Promise<ProductProps[] | undefined> => {
 };
 
 export const getProductsByCategory = async (
-	category: string,
+	category: string[],
 ): Promise<ProductProps[] | undefined> => {
 	try {
-		const res = await api.get(`/products/${category}`);
-		return res.data.data.products;
+		const res = await api.post("/products/filter/category", {
+			categories: category,
+		});
+		return res.data.data;
 	} catch (error) {
 		if (error instanceof AxiosError) throw error;
 	}

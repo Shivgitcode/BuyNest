@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../ErrorHandler/error";
 import { verifyToken } from "../utils/tokenGenerator";
 import type { SignUp } from "../utils/types";
-import { logger } from "../logger/devLogger";
 
 declare global {
 	namespace Express {
@@ -18,12 +17,11 @@ export const checkAuth = async (
 ) => {
 	try {
 		const token = req.cookies.jwt;
-		logger.debug(token);
+		if (!token) {
+			return next(new ErrorHandler("User is not LoggedIn", 401));
+		}
 
 		const isToken = await verifyToken(token);
-		if (!isToken) {
-			return next(new ErrorHandler("Unauthorized User", 401));
-		}
 		const user = isToken as SignUp;
 		req.user = user;
 		next();
