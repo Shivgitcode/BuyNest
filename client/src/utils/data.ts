@@ -253,3 +253,121 @@ export const categoriesData = [
 		link: "/shop",
 	},
 ];
+export const sampleProducts = [
+	{
+		id: "5e6f7g8h-9i0j-1k2l-3m4n-5o6p7q8r9s0t",
+		product: "iPad Pro 12.9-inch",
+		desc: "Apple's most powerful tablet with M2 chip, Liquid Retina XDR display.",
+		price: 1099,
+		categoryId: "tablet-cat-id",
+		category: "Tablets",
+		image:
+			"https://images.unsplash.com/photo-1544441893-675973e31985?w=500&auto=format",
+	},
+	{
+		id: "6f7g8h9i-0j1k-2l3m-4n5o-6p7q8r9s0t1u",
+		product: "ASUS ROG Gaming Monitor",
+		desc: "27-inch 4K HDR gaming monitor with 144Hz refresh rate and 1ms response time.",
+		price: 799,
+		categoryId: "monitor-cat-id",
+		category: "Monitors",
+		image:
+			"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&auto=format",
+	},
+	{
+		id: "7g8h9i0j-1k2l-3m4n-5o6p-7q8r9s0t1u2v",
+		product: "Logitech MX Master 3 Mouse",
+		desc: "Advanced wireless mouse with customizable buttons and precision scrolling.",
+		price: 99,
+		categoryId: "accessory-cat-id",
+		category: "Accessories",
+		image:
+			"https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=500&auto=format",
+	},
+	{
+		id: "8h9i0j1k-2l3m-4n5o-6p7q-8r9s0t1u2v3w",
+		product: "Canon EOS R6 Camera",
+		desc: "Full-frame mirrorless camera with 20MP sensor, 4K video, and in-body stabilization.",
+		price: 2499,
+		categoryId: "camera-cat-id",
+		category: "Cameras",
+		image:
+			"https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=500&auto=format",
+	},
+	{
+		id: "9i0j1k2l-3m4n-5o6p-7q8r-9s0t1u2v3w4x",
+		product: "Bose QuietComfort Earbuds",
+		desc: "True wireless noise cancelling earbuds with high-fidelity audio and secure fit.",
+		price: 279,
+		categoryId: "audio-cat-id",
+		category: "Audio",
+		image:
+			"https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&auto=format",
+	},
+];
+
+export const sampleOrders = [
+	{
+		id: "ORD-2024-1234",
+		customer: "John Smith",
+		email: "john@example.com",
+		date: "2023-06-15T10:30:00",
+		total: 1299.98,
+		status: "completed",
+		items: 3,
+	},
+	{
+		id: "ORD-2024-1235",
+		customer: "Emily Johnson",
+		email: "emily@example.com",
+		date: "2023-06-14T15:45:00",
+		total: 899.99,
+		status: "processing",
+		items: 1,
+	},
+	{
+		id: "ORD-2024-1236",
+		customer: "Michael Brown",
+		email: "michael@example.com",
+		date: "2023-06-14T09:15:00",
+		total: 349.99,
+		status: "shipped",
+		items: 2,
+	},
+	{
+		id: "ORD-2024-1237",
+		customer: "Sarah Davis",
+		email: "sarah@example.com",
+		date: "2023-06-13T16:20:00",
+		total: 1599.97,
+		status: "processing",
+		items: 4,
+	},
+	{
+		id: "ORD-2024-1238",
+		customer: "David Wilson",
+		email: "david@example.com",
+		date: "2023-06-12T11:05:00",
+		total: 99.99,
+		status: "cancelled",
+		items: 1,
+	},
+	{
+		id: "ORD-2024-1239",
+		customer: "Lisa Martinez",
+		email: "lisa@example.com",
+		date: "2023-06-12T08:30:00",
+		total: 279.97,
+		status: "completed",
+		items: 3,
+	},
+	{
+		id: "ORD-2024-1240",
+		customer: "Robert Taylor",
+		email: "robert@example.com",
+		date: "2023-06-11T14:50:00",
+		total: 799.99,
+		status: "pending",
+		items: 1,
+	},
+];

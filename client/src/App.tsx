@@ -1,8 +1,7 @@
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router";
-import Protected from "./components/Protected";
+import { RouterProvider, createBrowserRouter } from "react-router";
 import AuthContextWrapper from "./context/AuthContext";
 import Cart from "./pages/Cart";
 import Index from "./pages/Index";
@@ -11,32 +10,76 @@ import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/ProductDetail";
 import Shop from "./pages/Shop";
 import Signup from "./pages/Signup";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminOrders from "./pages/admin/Orders";
+import AdminProductForm from "./pages/admin/ProductForm";
+import AdminProducts from "./pages/admin/Products";
 
 const queryClient = new QueryClient();
+
+const routes = createBrowserRouter([
+	{
+		path: "/",
+		element: <Index />,
+	},
+
+	{
+		path: "/shop",
+		element: <Shop />,
+	},
+	{
+		path: "/cart",
+		element: <Cart />,
+	},
+	{
+		path: "/product/:id",
+		element: <ProductDetail />,
+	},
+	{
+		path: "/auth",
+		children: [
+			{
+				path: "login",
+				element: <Login />,
+			},
+			{
+				path: "signup",
+				element: <Signup />,
+			},
+		],
+	},
+	{
+		path: "/admin",
+		element: <AdminDashboard />,
+	},
+	{
+		path: "/admin/products",
+		element: <AdminProducts />,
+	},
+	{
+		path: "/admin/products/new",
+		element: <AdminProductForm />,
+	},
+	{
+		path: "/admin/products/edit/:id",
+		element: <AdminProductForm />,
+	},
+	{
+		path: "/admin/orders",
+		element: <AdminOrders />,
+	},
+	{
+		path: "*",
+		element: <NotFound />,
+	},
+]);
 
 const App = () => (
 	<QueryClientProvider client={queryClient}>
 		<TooltipProvider>
 			<AuthContextWrapper>
 				<Sonner />
-				<BrowserRouter>
-					<Routes>
-						<Route path="/" element={<Index />} />
-						<Route path="/shop" element={<Shop />} />
-						<Route path="/product/:id" element={<ProductDetail />} />
-						<Route
-							path="/cart"
-							element={
-								<Protected fallback={<Login />}>
-									<Cart />
-								</Protected>
-							}
-						/>
-						<Route path="/auth/login" element={<Login />} />
-						<Route path="/auth/signup" element={<Signup />} />
-						<Route path="*" element={<NotFound />} />
-					</Routes>
-				</BrowserRouter>
+				<RouterProvider router={routes} />
 			</AuthContextWrapper>
 		</TooltipProvider>
 	</QueryClientProvider>

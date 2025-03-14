@@ -8,13 +8,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 interface ProductCardProps {
-	id: string; // Updated to UUID string type
-	name: string; // Changed from 'name' to match your 'product' field
+	id: string;
+	name: string;
 	price: number;
 	image: string;
 	category?: string;
 	rating?: number;
-	description?: string; // Added to match your 'desc' field
+	description?: string;
 }
 
 const ProductCard = ({

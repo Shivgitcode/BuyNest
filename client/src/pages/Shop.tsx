@@ -22,7 +22,7 @@ const Shop = () => {
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const productsPerPage = 8;
-	const { productData, isLoading, isFetching } = useFetchProducts();
+	const { productData, isFetching } = useFetchProducts();
 
 	// Calculate pagination
 	const indexOfLastProduct = currentPage * productsPerPage;
