@@ -69,23 +69,30 @@ export const addProduct = async (
 	try {
 		const parseBody = ProductSchema.safeParse(req.body);
 		const imgFile = req.file;
+		console.log(imgFile);
 		if (!parseBody.success) {
+			logger.debug("inside parseif");
 			const validationError = parseBody.error.errors.map((err) => {
-				err.message;
+				return err.message;
 			});
 			return next(new ErrorHandler(`${validationError.join(", ")}`, 400));
 		}
 		if (!imgFile) {
+			console.log("hello ");
 			return next(new ErrorHandler("please give a img", 400));
 		}
+		console.log(parseBody.data.category);
 		const id = uuidv4();
 		const key = `${id}-${imgFile.originalname}`;
-		await putImage(imgFile.buffer, key);
+		await putImage(imgFile.buffer, key)
+			.then((data) => console.log("image uploaded successfully"))
+			.catch((err) => console.log(err));
 		const url = await signedUrl(key);
+		console.log("done");
 		const createProduct = await Product.create({
 			...parseBody.data,
 			image: url,
-			categoryId: category.get(parseBody.data.category),
+			categoryId: category.get(parseBody.data.category.toLowerCase()),
 		});
 		res.status(201).json({
 			message: "product added",
@@ -280,6 +287,26 @@ export const getProductsByCategory = async (
 		res.status(200).json({
 			message: "product fetched",
 			data: findProductsByCategory,
+		});
+	} catch (error) {
+		if (error instanceof Error) next(error);
+	}
+};
+
+export const deleteProduct = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { productId } = req.params;
+		const deletedProduct = await Product.destroy({
+			where: {
+				id: productId,
+			},
+		});
+		res.status(200).json({
+			message: "product successfully removed",
 		});
 	} catch (error) {
 		if (error instanceof Error) next(error);

@@ -1,3 +1,5 @@
+import { deleteProduct } from "@/actions/deleteProduct";
+import { getAllProducts } from "@/actions/getProducts";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +18,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { sampleProducts } from "@/utils/data";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
 import {
 	ChevronLeft,
 	ChevronRight,
@@ -31,13 +35,35 @@ import { Link } from "react-router";
 const AdminProducts = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("all");
+	const queryClient = useQueryClient();
 
-	const filteredProducts = sampleProducts.filter((product) => {
+	const { data: adminProducts, isPending } = useQuery({
+		queryKey: ["adminproducts"],
+		queryFn: getAllProducts,
+	});
+	const { mutateAsync: handleDelete } = useMutation({
+		mutationFn: deleteProduct,
+		onMutate: () => {
+			toast.loading("deleting product", { id: "delete-product" });
+		},
+		onSuccess: (data) => {
+			toast.success(data.message);
+			toast.dismiss("delete-product");
+			queryClient.invalidateQueries({ queryKey: ["adminproducts"] });
+		},
+		onError: (err) => {
+			toast.error(err.message);
+			toast.dismiss("delete-product");
+		},
+	});
+
+	const filteredProducts = adminProducts?.filter((product) => {
 		const matchesSearch =
 			product.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			product.desc.toLowerCase().includes(searchTerm.toLowerCase());
 		const matchesCategory =
-			categoryFilter === "all" || product.category === categoryFilter;
+			categoryFilter === "all" ||
+			product.Category.category === categoryFilter.toLowerCase();
 		return matchesSearch && matchesCategory;
 	});
 
@@ -61,12 +87,12 @@ const AdminProducts = () => {
 						</SelectTrigger>
 						<SelectContent>
 							<SelectItem value="all">All Categories</SelectItem>
-							<SelectItem value="Laptops">Laptops</SelectItem>
-							<SelectItem value="Smartphones">Smartphones</SelectItem>
+							<SelectItem value="Electronics">Electronics</SelectItem>
+							<SelectItem value="Home">Home</SelectItem>
 							<SelectItem value="Audio">Audio</SelectItem>
 							<SelectItem value="Tablets">Tablets</SelectItem>
 							<SelectItem value="Accessories">Accessories</SelectItem>
-							<SelectItem value="Monitors">Monitors</SelectItem>
+							<SelectItem value="Lightining">Lightining</SelectItem>
 							<SelectItem value="Cameras">Cameras</SelectItem>
 						</SelectContent>
 					</Select>
@@ -91,45 +117,48 @@ const AdminProducts = () => {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{filteredProducts.map((product) => (
-							<TableRow key={product.id}>
-								<TableCell className="font-medium">
-									<div className="flex items-center gap-3">
-										<div className="h-10 w-10 rounded bg-gray-100 overflow-hidden">
-											<img
-												src={product.image}
-												alt={product.product}
-												className="h-full w-full object-cover"
-											/>
+						{isPending ? (
+							<div>Loading...</div>
+						) : (
+							filteredProducts?.map((product) => (
+								<TableRow key={product.id}>
+									<TableCell className="font-medium">
+										<div className="flex items-center gap-3">
+											<div className="h-10 w-10 rounded bg-gray-100 overflow-hidden">
+												<img
+													src={product.image}
+													alt={product.product}
+													className="h-full w-full object-cover"
+												/>
+											</div>
+											<span>{product.product}</span>
 										</div>
-										<span>{product.product}</span>
-									</div>
-								</TableCell>
-								<TableCell className="max-w-xs truncate">
-									{product.desc}
-								</TableCell>
-								<TableCell>{product.category}</TableCell>
-								<TableCell className="text-right">
-									${product.price.toFixed(2)}
-								</TableCell>
-								<TableCell className="text-right">
-									<div className="flex justify-end gap-2">
-										<Button variant="ghost" size="icon" asChild>
-											<Link to={`/admin/products/edit/${product.id}`}>
-												<Edit className="h-4 w-4" />
-											</Link>
-										</Button>
-										<Button
-											variant="ghost"
-											size="icon"
-											className="text-red-500"
-										>
-											<Trash2 className="h-4 w-4" />
-										</Button>
-									</div>
-								</TableCell>
-							</TableRow>
-						))}
+									</TableCell>
+									<TableCell className="max-w-xs truncate">
+										{product.desc}
+									</TableCell>
+									<TableCell>{product.Category.category}</TableCell>
+									<TableCell className="text-right">${product.price}</TableCell>
+									<TableCell className="text-right">
+										<div className="flex justify-end gap-2">
+											<Button variant="ghost" size="icon" asChild>
+												<Link to={`/admin/products/edit/${product.id}`}>
+													<Edit className="h-4 w-4" />
+												</Link>
+											</Button>
+											<Button
+												variant="ghost"
+												size="icon"
+												className="text-red-500"
+												onClick={() => handleDelete(product.id)}
+											>
+												<Trash2 className="h-4 w-4" />
+											</Button>
+										</div>
+									</TableCell>
+								</TableRow>
+							))
+						)}
 					</TableBody>
 				</Table>
 			</div>

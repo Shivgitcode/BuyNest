@@ -6,7 +6,7 @@ interface ProductAttributes {
 	product: string;
 	desc: string;
 	image?: string; // Optional field
-	price: number;
+	price: string;
 	categoryId: string;
 }
 
@@ -15,7 +15,7 @@ interface ProductCreationAttributes {
 	product: string;
 	desc: string;
 	image?: string;
-	price: number;
+	price: string;
 	categoryId: string;
 }
 
@@ -36,10 +36,10 @@ const Product = sequelize.define<
 		allowNull: false,
 	},
 	image: {
-		type: DataTypes.STRING,
+		type: DataTypes.TEXT("long"),
 	},
 	price: {
-		type: DataTypes.INTEGER,
+		type: DataTypes.STRING,
 	},
 	categoryId: {
 		type: DataTypes.UUID,

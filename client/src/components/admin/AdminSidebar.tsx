@@ -23,7 +23,7 @@ export function AdminSidebar() {
 	return (
 		<div className="hidden md:flex flex-col h-screen w-64 bg-gray-900 text-white">
 			<div className="p-5 border-b border-gray-800">
-				<h1 className="text-xl font-bold">ElectroShop Admin</h1>
+				<h1 className="text-xl font-bold">BuyNest Admin</h1>
 			</div>
 
 			<nav className="flex-1 overflow-y-auto py-4">

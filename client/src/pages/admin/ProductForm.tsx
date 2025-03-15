@@ -1,3 +1,5 @@
+import { addNewProduct } from "@/actions/addProducts";
+import { getOneProduct } from "@/actions/getOneProduct";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,9 +13,11 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ImageIcon, Save } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { toast } from "sonner";
 
 // Sample product data (for edit mode)
 const sampleProducts = [
@@ -21,7 +25,7 @@ const sampleProducts = [
 		id: "5e6f7g8h-9i0j-1k2l-3m4n-5o6p7q8r9s0t",
 		product: "iPad Pro 12.9-inch",
 		desc: "Apple's most powerful tablet with M2 chip, Liquid Retina XDR display, and Apple Pencil support.",
-		price: 1099,
+		price: "1099",
 		categoryId: "tablet-cat-id",
 		category: "Tablets",
 		image:
@@ -31,7 +35,7 @@ const sampleProducts = [
 		id: "6f7g8h9i-0j1k-2l3m-4n5o-6p7q8r9s0t1u",
 		product: "ASUS ROG Gaming Monitor",
 		desc: "27-inch 4K HDR gaming monitor with 144Hz refresh rate and 1ms response time.",
-		price: 799,
+		price: "799",
 		categoryId: "monitor-cat-id",
 		category: "Monitors",
 		image:
@@ -55,42 +59,70 @@ const AdminProductForm = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const isEditMode = Boolean(id);
+	const queryClient = useQueryClient();
+	console.log(id);
 
-	// Find the product if in edit mode
-	const existingProduct = isEditMode
-		? sampleProducts.find((p) => p.id === id)
-		: null;
+	const { data: sampleProduct } = useQuery({
+		queryKey: ["oneproduct", id],
+		queryFn: () => getOneProduct(id as string),
+		enabled: isEditMode,
+	});
+	console.log(sampleProduct);
 
-	// Form state
-	const [formData, setFormData] = useState({
-		product: existingProduct?.product || "",
-		desc: existingProduct?.desc || "",
-		price: existingProduct?.price || "",
-		categoryId: existingProduct?.categoryId || "none", // Changed from empty string to "none"
-		image: existingProduct?.image || "",
+	const { mutateAsync: addProduct } = useMutation({
+		mutationFn: addNewProduct,
+		onMutate: () => {
+			toast.loading("adding product", { id: "add-product" });
+		},
+		onSuccess: (data) => {
+			console.log(data);
+			toast.success(data.message);
+			toast.dismiss("add-product");
+			queryClient.invalidateQueries({ queryKey: ["adminproducts"] });
+			navigate("/admin/products");
+		},
+		onError: (err) => {
+			toast.error(err.message);
+			toast.dismiss("add-product");
+		},
 	});
 
-	// Handle form input changes
+	// Find the product if in edit mode
+
+	// Form state
+	const [file, setFile] = useState<File | null>(null);
+	const [preview, setPreview] = useState("");
+	const [formData, setFormData] = useState({
+		product: sampleProduct?.product || "",
+		desc: sampleProduct?.desc || "",
+		price: sampleProduct?.price || "",
+		categoryId: sampleProduct?.categoryId || "none",
+		image: sampleProduct?.image || "",
+	});
+	const productFormData = new FormData();
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
 		const { name, value } = e.target;
+		if (e.target instanceof HTMLInputElement && e.target.files) {
+			setFile(e.target.files[0]);
+			setPreview(URL.createObjectURL(e.target.files[0]));
+		}
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	// Handle category selection
 	const handleCategoryChange = (value: string) => {
 		setFormData((prev) => ({ ...prev, categoryId: value }));
 	};
 
-	// Handle form submission
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log("Form submitted:", formData);
-
-		// In a real app, you would make an API call here
-		// For now, just navigate back to products list
-		navigate("/admin/products");
+		productFormData.append("product", formData.product);
+		productFormData.append("desc", formData.desc);
+		productFormData.append("price", formData.price);
+		productFormData.append("category", formData.categoryId);
+		productFormData.append("img", file as File);
+		addProduct(productFormData);
 	};
 
 	return (
@@ -154,7 +186,10 @@ const AdminProductForm = () => {
 											<SelectContent>
 												<SelectItem value="none">Select a category</SelectItem>
 												{categories.map((category) => (
-													<SelectItem key={category.id} value={category.id}>
+													<SelectItem
+														key={category.id}
+														value={category.category}
+													>
 														{category.category}
 													</SelectItem>
 												))}
@@ -194,10 +229,10 @@ const AdminProductForm = () => {
 									<div>
 										<Label htmlFor="image">Product Image</Label>
 										<div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-300 px-6 py-10">
-											{formData.image ? (
+											{file !== null ? (
 												<div className="text-center">
 													<img
-														src={formData.image}
+														src={preview}
 														alt="Product preview"
 														className="mx-auto h-32 w-32 object-contain rounded"
 													/>
@@ -229,6 +264,7 @@ const AdminProductForm = () => {
 																id="file-upload"
 																name="file-upload"
 																type="file"
+																onChange={handleChange}
 																className="sr-only"
 															/>
 														</Label>

@@ -29,3 +29,25 @@ export const checkAuth = async (
 		if (error instanceof Error) next(error);
 	}
 };
+
+export const checkAdmin = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const token = req.cookies.jwt;
+		if (!token) {
+			return next(new ErrorHandler("User not loggedIn", 401));
+		}
+		const parsedToken = await verifyToken(token);
+		const user = parsedToken as SignUp;
+		if (user.role !== "admin") {
+			return next(new ErrorHandler("User is not Admin", 401));
+		}
+		req.user = user;
+		next();
+	} catch (error) {
+		if (error instanceof Error) next(error);
+	}
+};

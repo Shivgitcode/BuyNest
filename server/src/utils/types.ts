@@ -21,7 +21,7 @@ export type Login = z.infer<typeof LoginSchema>;
 export const ProductSchema = z.object({
 	product: z.string(),
 	desc: z.string(),
-	price: z.number(),
+	price: z.string(),
 	category: z.string(),
 });
 

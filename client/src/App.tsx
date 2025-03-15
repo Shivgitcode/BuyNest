@@ -2,6 +2,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createBrowserRouter } from "react-router";
+import Protected from "./components/Protected";
 import AuthContextWrapper from "./context/AuthContext";
 import Cart from "./pages/Cart";
 import Index from "./pages/Index";
@@ -50,23 +51,43 @@ const routes = createBrowserRouter([
 	},
 	{
 		path: "/admin",
-		element: <AdminDashboard />,
+		element: (
+			<Protected requiredRole="admin">
+				<AdminDashboard />
+			</Protected>
+		),
 	},
 	{
 		path: "/admin/products",
-		element: <AdminProducts />,
+		element: (
+			<Protected requiredRole="admin">
+				<AdminProducts />
+			</Protected>
+		),
 	},
 	{
 		path: "/admin/products/new",
-		element: <AdminProductForm />,
+		element: (
+			<Protected requiredRole="admin">
+				<AdminProductForm />
+			</Protected>
+		),
 	},
 	{
 		path: "/admin/products/edit/:id",
-		element: <AdminProductForm />,
+		element: (
+			<Protected requiredRole="admin">
+				<AdminProductForm />
+			</Protected>
+		),
 	},
 	{
 		path: "/admin/orders",
-		element: <AdminOrders />,
+		element: (
+			<Protected requiredRole="admin">
+				<AdminOrders />
+			</Protected>
+		),
 	},
 	{
 		path: "*",

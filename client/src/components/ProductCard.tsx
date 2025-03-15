@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router";
 interface ProductCardProps {
 	id: string;
 	name: string;
-	price: number;
+	price: string;
 	image: string;
 	category?: string;
 	rating?: number;
@@ -77,7 +77,7 @@ const ProductCard = ({
 				)}
 				<div className="flex justify-between items-center">
 					<div>
-						<p className="font-semibold">${price.toFixed(2)}</p>
+						<p className="font-semibold">${price}</p>
 						<div className="star-rating mt-1">
 							{Array(5)
 								.fill(0)

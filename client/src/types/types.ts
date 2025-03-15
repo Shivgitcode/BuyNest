@@ -43,7 +43,8 @@ export type ProductProps = {
 	product: string;
 	desc: string;
 	image: string;
-	price: number;
+	price: string;
+	categoryId: string;
 	quantity: number;
 	Category: {
 		id: string;
@@ -57,4 +58,11 @@ export type CartProps = {
 	userId: string;
 	productId: string;
 	Product: ProductProps;
+};
+export type ProductFormProps = {
+	product: string;
+	desc: string;
+	category: string;
+	price: string;
+	img: string;
 };
