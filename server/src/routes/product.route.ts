@@ -10,6 +10,7 @@ import {
 	getOneProduct,
 	getProducts,
 	getProductsByCategory,
+	updateProducts,
 } from "../controllers/products";
 import { checkAdmin, checkAuth } from "../middleware/auth.middleware";
 import { upload } from "../middleware/upload.middleware";
@@ -24,5 +25,6 @@ productRouter.post("/products/cart", checkAuth, addToCart);
 productRouter.post("/products", checkAdmin, upload.single("img"), addProduct);
 productRouter.post("/products/filter/category", getProductsByCategory);
 productRouter.get("/products/:category", getProducts);
-productRouter.post("/product/delete/:productId", checkAdmin, deleteProduct);
+productRouter.delete("/product/delete/:productId", checkAdmin, deleteProduct);
+productRouter.patch("/product/:productId", checkAdmin, updateProducts);
 productRouter.get("/product/:productId", getOneProduct);

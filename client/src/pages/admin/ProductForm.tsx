@@ -1,5 +1,6 @@
 import { addNewProduct } from "@/actions/addProducts";
 import { getOneProduct } from "@/actions/getOneProduct";
+import { updateProducts } from "@/actions/updateProduct";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,9 +14,10 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { ProductProps } from "@/types/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ImageIcon, Save } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 
@@ -60,14 +62,19 @@ const AdminProductForm = () => {
 	const navigate = useNavigate();
 	const isEditMode = Boolean(id);
 	const queryClient = useQueryClient();
-	console.log(id);
+	console.log(isEditMode, "inside ProductForm");
 
-	const { data: sampleProduct } = useQuery({
+	const {
+		data: sampleProduct,
+		isPending,
+		isFetching,
+		isSuccess,
+	} = useQuery({
 		queryKey: ["oneproduct", id],
 		queryFn: () => getOneProduct(id as string),
 		enabled: isEditMode,
 	});
-	console.log(sampleProduct);
+	console.log(JSON.stringify(sampleProduct), "shivansh");
 
 	const { mutateAsync: addProduct } = useMutation({
 		mutationFn: addNewProduct,
@@ -76,6 +83,7 @@ const AdminProductForm = () => {
 		},
 		onSuccess: (data) => {
 			console.log(data);
+
 			toast.success(data.message);
 			toast.dismiss("add-product");
 			queryClient.invalidateQueries({ queryKey: ["adminproducts"] });
@@ -86,8 +94,29 @@ const AdminProductForm = () => {
 			toast.dismiss("add-product");
 		},
 	});
+	useEffect(() => {
+		if (isSuccess) {
+			setFormData(sampleProduct as ProductProps);
+		}
+	}, [sampleProduct]);
 
 	// Find the product if in edit mode
+	const { mutateAsync: updatingProduct } = useMutation({
+		mutationFn: updateProducts,
+		onMutate: () => {
+			toast.loading("updating product", { id: "update-product" });
+		},
+		onSuccess: (data) => {
+			toast.success(data.message);
+			queryClient.invalidateQueries({ queryKey: ["adminproducts"] });
+
+			toast.dismiss("update-product");
+		},
+		onError: (err) => {
+			toast.error(err.message);
+			toast.dismiss("update-product");
+		},
+	});
 
 	// Form state
 	const [file, setFile] = useState<File | null>(null);
@@ -99,6 +128,7 @@ const AdminProductForm = () => {
 		categoryId: sampleProduct?.categoryId || "none",
 		image: sampleProduct?.image || "",
 	});
+
 	const productFormData = new FormData();
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -115,14 +145,40 @@ const AdminProductForm = () => {
 		setFormData((prev) => ({ ...prev, categoryId: value }));
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		console.log("Form submission initiated");
+
+		// Create a new FormData instance inside the submit handler
+		const productFormData = new FormData();
 		productFormData.append("product", formData.product);
 		productFormData.append("desc", formData.desc);
 		productFormData.append("price", formData.price);
 		productFormData.append("category", formData.categoryId);
-		productFormData.append("img", file as File);
-		addProduct(productFormData);
+
+		// Check if file is set before appending
+		if (file) {
+			productFormData.append("img", file);
+		}
+
+		console.log("Form data being submitted:", {
+			product: formData.product,
+			desc: formData.desc,
+			price: formData.price,
+			category: formData.categoryId,
+			img: file ? file.name : "No file selected",
+		});
+
+		if (isEditMode) {
+			console.log("Updating product...");
+			await updatingProduct({
+				productId: id as string,
+				productData: productFormData,
+			});
+		} else {
+			console.log("Adding new product...");
+			await addProduct(productFormData);
+		}
 	};
 
 	return (
@@ -279,7 +335,7 @@ const AdminProductForm = () => {
 										<Input
 											id="image"
 											name="image"
-											value={formData.image}
+											value={sampleProduct?.image}
 											onChange={handleChange}
 											placeholder="Or enter image URL"
 											className="mt-2"

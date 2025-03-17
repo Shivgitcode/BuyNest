@@ -33,7 +33,6 @@ export async function signedUrl(key: string) {
 		const command = new GetObjectCommand({
 			Bucket: process.env.BUCKET as string,
 			Key: key,
-			ResponseContentDisposition: "inline",
 		});
 		const url = await getSignedUrl(client, command);
 		return url;

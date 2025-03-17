@@ -73,7 +73,7 @@ const ProductDetail = () => {
 								<div className="mb-6">
 									<div className="flex items-center gap-3">
 										<span className="text-2xl font-bold">
-											${product?.price.toFixed(2)}
+											${Number.parseInt(product?.price as string).toFixed(2)}
 										</span>
 										{/* {product.discount && (
 											<span className="text-sm text-gray-500 line-through">

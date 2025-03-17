@@ -1,5 +1,3 @@
-import { deleteProduct } from "@/actions/deleteProduct";
-import { getAllProducts } from "@/actions/getProducts";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,9 +16,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
+import useAdminProduct from "@/hooks/use-admin-product";
 import {
 	ChevronLeft,
 	ChevronRight,
@@ -35,27 +32,7 @@ import { Link } from "react-router";
 const AdminProducts = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("all");
-	const queryClient = useQueryClient();
-
-	const { data: adminProducts, isPending } = useQuery({
-		queryKey: ["adminproducts"],
-		queryFn: getAllProducts,
-	});
-	const { mutateAsync: handleDelete } = useMutation({
-		mutationFn: deleteProduct,
-		onMutate: () => {
-			toast.loading("deleting product", { id: "delete-product" });
-		},
-		onSuccess: (data) => {
-			toast.success(data.message);
-			toast.dismiss("delete-product");
-			queryClient.invalidateQueries({ queryKey: ["adminproducts"] });
-		},
-		onError: (err) => {
-			toast.error(err.message);
-			toast.dismiss("delete-product");
-		},
-	});
+	const { adminProducts, isPending, handleDelete } = useAdminProduct();
 
 	const filteredProducts = adminProducts?.filter((product) => {
 		const matchesSearch =

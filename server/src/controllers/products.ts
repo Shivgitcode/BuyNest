@@ -9,7 +9,11 @@ import Product from "../models/product.model";
 import { sequelize } from "../sequalize/db";
 import { putImage, signedUrl } from "../utils/aws";
 import { category } from "../utils/data";
-import { ProductSchema, type RawQueryResult } from "../utils/types";
+import {
+	ProductSchema,
+	type RawQueryResult,
+	UpdateSchema,
+} from "../utils/types";
 
 export const getProducts = async (
 	req: Request,
@@ -310,5 +314,35 @@ export const deleteProduct = async (
 		});
 	} catch (error) {
 		if (error instanceof Error) next(error);
+	}
+};
+
+export const updateProducts = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { productId } = req.params;
+		console.log(productId);
+		console.log(req.body);
+		const parseBody = UpdateSchema.safeParse(req.body);
+		console.log(parseBody);
+		console.log(parseBody.data);
+		const updateProduct = await Product.update(
+			{
+				...parseBody.data,
+			},
+			{
+				where: {
+					id: productId,
+				},
+			},
+		);
+		res.status(200).json({
+			message: "product updated",
+		});
+	} catch (error) {
+		next(error);
 	}
 };

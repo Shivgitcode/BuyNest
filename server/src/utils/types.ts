@@ -63,3 +63,11 @@ export interface RawQueryResult {
 	product_price: number;
 	product_image: string;
 }
+
+export const UpdateSchema = z.object({
+	product: z.string().optional(),
+	desc: z.string().optional(),
+	price: z.string().optional(),
+	image: z.string().optional(),
+});
+export type UpdateProp = z.infer<typeof UpdateSchema>;
