@@ -71,6 +71,7 @@ export const addProduct = async (
 	next: NextFunction,
 ) => {
 	try {
+		console.log(req.body);
 		const parseBody = ProductSchema.safeParse(req.body);
 		const imgFile = req.file;
 		console.log(imgFile);
@@ -324,6 +325,8 @@ export const updateProducts = async (
 ) => {
 	try {
 		const { productId } = req.params;
+		const files = req.file;
+		console.log(files);
 		console.log(productId);
 		console.log(req.body);
 		const parseBody = UpdateSchema.safeParse(req.body);

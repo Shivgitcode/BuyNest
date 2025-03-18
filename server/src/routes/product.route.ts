@@ -26,5 +26,10 @@ productRouter.post("/products", checkAdmin, upload.single("img"), addProduct);
 productRouter.post("/products/filter/category", getProductsByCategory);
 productRouter.get("/products/:category", getProducts);
 productRouter.delete("/product/delete/:productId", checkAdmin, deleteProduct);
-productRouter.patch("/product/:productId", checkAdmin, updateProducts);
+productRouter.post(
+	"/product/update/:productId",
+	checkAdmin,
+	upload.single("img"),
+	updateProducts,
+);
 productRouter.get("/product/:productId", getOneProduct);

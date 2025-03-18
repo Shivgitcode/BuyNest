@@ -6,11 +6,10 @@ export const updateProducts = async ({
 	productData,
 }: { productId: string; productData: FormData }) => {
 	try {
-		console.log(productData);
-		const res = await api.patch(`/product/${productId}`, productData);
+		const res = await api.post(`/product/update/${productId}`, productData);
 		console.log(res.data);
 		return res.data;
 	} catch (error) {
-		if (error instanceof AxiosError) throw new Error(error.response?.data);
+		if (error instanceof AxiosError) throw error.response?.data;
 	}
 };

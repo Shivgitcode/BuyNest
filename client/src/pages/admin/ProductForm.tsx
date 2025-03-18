@@ -62,7 +62,6 @@ const AdminProductForm = () => {
 	const navigate = useNavigate();
 	const isEditMode = Boolean(id);
 	const queryClient = useQueryClient();
-	console.log(isEditMode, "inside ProductForm");
 
 	const {
 		data: sampleProduct,
@@ -74,7 +73,6 @@ const AdminProductForm = () => {
 		queryFn: () => getOneProduct(id as string),
 		enabled: isEditMode,
 	});
-	console.log(JSON.stringify(sampleProduct), "shivansh");
 
 	const { mutateAsync: addProduct } = useMutation({
 		mutationFn: addNewProduct,
@@ -149,8 +147,6 @@ const AdminProductForm = () => {
 		e.preventDefault();
 		console.log("Form submission initiated");
 
-		// Create a new FormData instance inside the submit handler
-		const productFormData = new FormData();
 		productFormData.append("product", formData.product);
 		productFormData.append("desc", formData.desc);
 		productFormData.append("price", formData.price);
@@ -159,15 +155,9 @@ const AdminProductForm = () => {
 		// Check if file is set before appending
 		if (file) {
 			productFormData.append("img", file);
+		} else if (formData.image) {
+			productFormData.append("image", formData.image);
 		}
-
-		console.log("Form data being submitted:", {
-			product: formData.product,
-			desc: formData.desc,
-			price: formData.price,
-			category: formData.categoryId,
-			img: file ? file.name : "No file selected",
-		});
 
 		if (isEditMode) {
 			console.log("Updating product...");
@@ -335,7 +325,7 @@ const AdminProductForm = () => {
 										<Input
 											id="image"
 											name="image"
-											value={sampleProduct?.image}
+											value={formData.image}
 											onChange={handleChange}
 											placeholder="Or enter image URL"
 											className="mt-2"
