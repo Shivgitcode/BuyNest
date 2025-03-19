@@ -1,6 +1,3 @@
-import { addNewProduct } from "@/actions/addProducts";
-import { getOneProduct } from "@/actions/getOneProduct";
-import { updateProducts } from "@/actions/updateProduct";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,38 +11,12 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import useAdminCreateAndUpdate from "@/hooks/use-admin-update-delete";
 import type { ProductProps } from "@/types/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ImageIcon, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { toast } from "sonner";
 
-// Sample product data (for edit mode)
-const sampleProducts = [
-	{
-		id: "5e6f7g8h-9i0j-1k2l-3m4n-5o6p7q8r9s0t",
-		product: "iPad Pro 12.9-inch",
-		desc: "Apple's most powerful tablet with M2 chip, Liquid Retina XDR display, and Apple Pencil support.",
-		price: "1099",
-		categoryId: "tablet-cat-id",
-		category: "Tablets",
-		image:
-			"https://images.unsplash.com/photo-1544441893-675973e31985?w=500&auto=format",
-	},
-	{
-		id: "6f7g8h9i-0j1k-2l3m-4n5o-6p7q8r9s0t1u",
-		product: "ASUS ROG Gaming Monitor",
-		desc: "27-inch 4K HDR gaming monitor with 144Hz refresh rate and 1ms response time.",
-		price: "799",
-		categoryId: "monitor-cat-id",
-		category: "Monitors",
-		image:
-			"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&auto=format",
-	},
-];
-
-// Sample categories
 const categories = [
 	{ id: "laptop-cat-id", category: "Laptops" },
 	{ id: "smartphone-cat-id", category: "Smartphones" },
@@ -61,62 +32,15 @@ const AdminProductForm = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const isEditMode = Boolean(id);
-	const queryClient = useQueryClient();
+	const { isSuccess, sampleProduct, addProduct, updatingProduct } =
+		useAdminCreateAndUpdate(isEditMode, id as string);
 
-	const {
-		data: sampleProduct,
-		isPending,
-		isFetching,
-		isSuccess,
-	} = useQuery({
-		queryKey: ["oneproduct", id],
-		queryFn: () => getOneProduct(id as string),
-		enabled: isEditMode,
-	});
-
-	const { mutateAsync: addProduct } = useMutation({
-		mutationFn: addNewProduct,
-		onMutate: () => {
-			toast.loading("adding product", { id: "add-product" });
-		},
-		onSuccess: (data) => {
-			console.log(data);
-
-			toast.success(data.message);
-			toast.dismiss("add-product");
-			queryClient.invalidateQueries({ queryKey: ["adminproducts"] });
-			navigate("/admin/products");
-		},
-		onError: (err) => {
-			toast.error(err.message);
-			toast.dismiss("add-product");
-		},
-	});
 	useEffect(() => {
 		if (isSuccess) {
 			setFormData(sampleProduct as ProductProps);
 		}
 	}, [sampleProduct]);
 
-	// Find the product if in edit mode
-	const { mutateAsync: updatingProduct } = useMutation({
-		mutationFn: updateProducts,
-		onMutate: () => {
-			toast.loading("updating product", { id: "update-product" });
-		},
-		onSuccess: (data) => {
-			toast.success(data.message);
-			queryClient.invalidateQueries({ queryKey: ["adminproducts"] });
-
-			toast.dismiss("update-product");
-		},
-		onError: (err) => {
-			toast.error(err.message);
-			toast.dismiss("update-product");
-		},
-	});
-
-	// Form state
 	const [file, setFile] = useState<File | null>(null);
 	const [preview, setPreview] = useState("");
 	const [formData, setFormData] = useState({
@@ -152,7 +76,6 @@ const AdminProductForm = () => {
 		productFormData.append("price", formData.price);
 		productFormData.append("category", formData.categoryId);
 
-		// Check if file is set before appending
 		if (file) {
 			productFormData.append("img", file);
 		} else if (formData.image) {

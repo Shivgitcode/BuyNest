@@ -12,6 +12,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
 import { stream } from "./logger/devLogger";
+import { adminRouter } from "./routes/admin.route";
 import { productRouter } from "./routes/product.route";
 import { defineAssociations } from "./sequalize/associations";
 const app = express();
@@ -30,11 +31,11 @@ app.use(
 				? process.env.DEPLOYED_URL
 				: "http://localhost:5173",
 		credentials: true,
-		methods: ["GET", "POST", "PUT", "PATCH"],
+		methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 	}),
 );
 app.use(express.urlencoded({ extended: true }));
-app.use("/api/v1", authRouter, productRouter);
+app.use("/api/v1", authRouter, productRouter, adminRouter);
 
 app.use(
 	(err: ErrorHandler, req: Request, res: Response, next: NextFunction) => {

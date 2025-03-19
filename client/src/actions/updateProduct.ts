@@ -6,7 +6,7 @@ export const updateProducts = async ({
 	productData,
 }: { productId: string; productData: FormData }) => {
 	try {
-		const res = await api.post(`/product/update/${productId}`, productData);
+		const res = await api.patch(`/product/update/${productId}`, productData);
 		console.log(res.data);
 		return res.data;
 	} catch (error) {
