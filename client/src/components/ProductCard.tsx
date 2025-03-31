@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router";
 interface ProductCardProps {
 	id: string;
 	name: string;
-	price: string;
+	price: number;
 	image: string;
 	category?: string;
 	rating?: number;

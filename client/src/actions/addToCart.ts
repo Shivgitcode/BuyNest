@@ -3,10 +3,9 @@ import type { CartProps, ProductProps } from "@/types/types";
 
 export const addToCart = async (
 	data: ProductProps,
-	number?: number,
 ): Promise<CartProps | undefined> => {
 	try {
-		const quantity = number || 1;
+		const quantity = data.quantity || 1;
 		const cartItems: ProductProps[] = [];
 		cartItems.push(data);
 		const res = await api.post(

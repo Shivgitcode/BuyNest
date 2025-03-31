@@ -247,3 +247,30 @@ export const getProductsByCategory = async (
 		if (error instanceof Error) next(error);
 	}
 };
+
+export const getProductsByPrice = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const query = req.query.range;
+		const range = JSON.parse(query as string);
+		const findByRange = await sequelize.query(
+			`SELECT * FROM "Products" where price BETWEEN :range1 and :range2`,
+			{
+				replacements: {
+					range1: Number.parseInt(range[0]),
+					range2: Number.parseInt(range[1]),
+				},
+				type: QueryTypes.SELECT,
+			},
+		);
+		res.status(200).json({
+			message: "product by price",
+			data: findByRange,
+		});
+	} catch (error) {
+		if (error instanceof Error) next(error);
+	}
+};

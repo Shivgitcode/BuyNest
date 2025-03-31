@@ -43,7 +43,7 @@ export type ProductProps = {
 	product: string;
 	desc: string;
 	image: string;
-	price: string;
+	price: number;
 	categoryId: string;
 	quantity: number;
 	Category: {

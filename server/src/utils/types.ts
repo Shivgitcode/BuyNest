@@ -23,6 +23,7 @@ export const ProductSchema = z.object({
 	desc: z.string(),
 	price: z.string(),
 	category: z.string(),
+	image: z.string(),
 });
 
 export type Products = z.infer<typeof ProductSchema>;

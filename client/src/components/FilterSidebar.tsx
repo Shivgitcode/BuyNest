@@ -11,6 +11,7 @@ import { Slider } from "@/components/ui/slider";
 import useFetchCategory from "@/hooks/useFetchCategory";
 import { useFilter } from "@/store/filter-store";
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import CategorySkeleton from "./CategorySkeleton";
 import Spinner from "./Spinner";
 
@@ -21,6 +22,7 @@ interface FilterSidebarProps {
 const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 	const { isFetching, isLoading, categories } = useFetchCategory();
 	const queryClient = useQueryClient();
+	const [sliderValue, setSliderValue] = useState();
 
 	const { filterCategories, setFilterCategories, setNullFilter } = useFilter(
 		(state) => state,
@@ -32,6 +34,10 @@ const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 		queryClient.invalidateQueries({
 			queryKey: ["product", [...filterCategories]],
 		});
+	};
+
+	const handlePriceFilter = (value: [number, number]) => {
+		console.log(value);
 	};
 
 	return isLoading ? (
@@ -59,7 +65,12 @@ const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 					<AccordionTrigger className="py-3">Price Range</AccordionTrigger>
 					<AccordionContent>
 						<div className="py-2">
-							<Slider defaultValue={[20, 80]} max={500} step={1} />
+							<Slider
+								defaultValue={[20, 80]}
+								max={500}
+								step={1}
+								onValueChange={handlePriceFilter}
+							/>
 							<div className="flex justify-between mt-2 text-sm text-muted-foreground">
 								<span>$0</span>
 								<span>$500</span>

@@ -24,18 +24,22 @@ export const addProduct = async (
 			});
 			return next(new ErrorHandler(`${validationError.join(", ")}`, 400));
 		}
-		if (!imgFile) {
+		if (!imgFile && !parseBody.data.image) {
 			console.log("hello ");
 			return next(new ErrorHandler("please give a img", 400));
 		}
+		let url = parseBody.data.image;
 		console.log(parseBody.data.category);
-		const id = uuidv4();
-		const key = `${id}-${imgFile.originalname}`;
-		const url = await putImage(imgFile.buffer, key);
-		logger.debug("done");
+		if (imgFile) {
+			const id = uuidv4();
+			const key = `${id}-${imgFile?.originalname}`;
+			url = (await putImage(imgFile.buffer, key)) as string;
+		}
+
 		const createProduct = await Product.create({
 			...parseBody.data,
 			image: url,
+			price: Number.parseInt(parseBody.data.price),
 			categoryId: category.get(parseBody.data.category.toLowerCase()),
 		});
 		res.status(201).json({
@@ -92,6 +96,7 @@ export const updateProducts = async (
 			{
 				...parseBody.data,
 				image: url,
+				price: Number.parseInt(parseBody.data?.price as string),
 			},
 			{
 				where: {

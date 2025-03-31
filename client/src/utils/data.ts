@@ -229,30 +229,55 @@ export const cartItems = [
 
 export const categoriesData = [
 	{
-		title: "Women's Fashion",
+		title: "Electronics",
 		image:
-			"https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&auto=format",
-		link: "/shop",
+			"https://images.unsplash.com/photo-1621607510248-9c78bbab941b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+		link: "/shop/electronics",
 	},
 	{
-		title: "Men's Collection",
+		title: "Lighting",
 		image:
-			"https://images.unsplash.com/photo-1488161628813-04466f872be2?w=500&auto=format",
-		link: "/shop",
+			"https://images.unsplash.com/photo-1516715651727-95fa73e9799c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+		link: "/shop/lighting",
+	},
+	{
+		title: "Audio",
+		image:
+			"https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+		link: "/shop/audio",
+	},
+	{
+		title: "Home",
+		image:
+			"https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=2158&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+		link: "/shop/home",
+	},
+	{
+		title: "Gaming",
+		image:
+			"https://images.unsplash.com/photo-1573053986275-840ffc7cc685?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+		link: "/shop/gaming",
+	},
+	{
+		title: "Wearables",
+		image:
+			"https://images.unsplash.com/photo-1596236100223-f3c656de3038?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+		link: "/shop/wearables",
+	},
+	{
+		title: "Computing",
+		image:
+			"https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&auto=format",
+		link: "/shop/computing",
 	},
 	{
 		title: "Accessories",
 		image:
-			"https://images.unsplash.com/photo-1573455494060-c5595004fb6c?w=500&auto=format",
-		link: "/shop",
-	},
-	{
-		title: "Footwear",
-		image:
-			"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format",
-		link: "/shop",
+			"https://images.unsplash.com/photo-1624823183493-ed5832f48f18?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+		link: "/shop/accessories",
 	},
 ];
+
 export const sampleProducts = [
 	{
 		id: "5e6f7g8h-9i0j-1k2l-3m4n-5o6p7q8r9s0t",

@@ -7,9 +7,9 @@ async function insertData() {
 	try {
 		await Category.bulkCreate(categories);
 		await Product.bulkCreate(products);
-		logger.info("Categories inserted successfully");
+		logger.info("Categories and Products inserted successfully");
 	} catch (error) {
-		if (error instanceof Error) logger.error(error.message);
+		if (error instanceof Error) logger.error(error);
 	}
 }
 

@@ -3,7 +3,8 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { product } from "@/utils/data";
+import useFetchCart from "@/hooks/use-fetchCart";
+import type { ProductProps } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { Heart, ShoppingCart } from "lucide-react";
 import { useState } from "react";
@@ -24,7 +25,14 @@ const ProductDetail = () => {
 	const increaseQuantity = () => setQuantity((prev) => prev + 1);
 	const decreaseQuantity = () =>
 		setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-
+	const { addInCart } = useFetchCart();
+	const handleCart = async () => {
+		addInCart({
+			...(product as ProductProps),
+			quantity: quantity,
+			id: id as string,
+		});
+	};
 	return (
 		<div className="min-h-screen flex flex-col">
 			<Navbar />
@@ -73,7 +81,7 @@ const ProductDetail = () => {
 								<div className="mb-6">
 									<div className="flex items-center gap-3">
 										<span className="text-2xl font-bold">
-											${Number.parseInt(product?.price as string).toFixed(2)}
+											${product?.price.toFixed(2)}
 										</span>
 										{/* {product.discount && (
 											<span className="text-sm text-gray-500 line-through">
@@ -113,7 +121,10 @@ const ProductDetail = () => {
 							</div>
 
 							<div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-								<Button className="py-6 w-full relative overflow-hidden cart-btn flex items-center justify-center gap-2">
+								<Button
+									className="py-6 w-full relative overflow-hidden cart-btn flex items-center justify-center gap-2"
+									onClick={handleCart}
+								>
 									<ShoppingCart className="h-5 w-5" />
 									Add to Cart
 								</Button>
