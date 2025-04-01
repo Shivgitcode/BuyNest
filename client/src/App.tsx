@@ -8,6 +8,8 @@ import Cart from "./pages/Cart";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import PaymentFailed from "./pages/PaymentFailed";
+import PaymentVerified from "./pages/PaymentSuccess";
 import ProductDetail from "./pages/ProductDetail";
 import Shop from "./pages/Shop";
 import Signup from "./pages/Signup";
@@ -48,6 +50,14 @@ const routes = createBrowserRouter([
 				element: <Signup />,
 			},
 		],
+	},
+	{
+		path: "/payment/success",
+		element: <PaymentVerified />,
+	},
+	{
+		path: "/payment/failed",
+		element: <PaymentFailed />,
 	},
 	{
 		path: "/admin",

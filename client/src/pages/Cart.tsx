@@ -1,3 +1,5 @@
+import makePayment from "@/actions/makePayment";
+import verifyPayment from "@/actions/verifyPayment";
 import CartEmpty from "@/components/CartComponents/CartEmpty";
 import CartItemCard from "@/components/CartComponents/CartItemCard";
 import Footer from "@/components/Footer";
@@ -5,13 +7,50 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import useFetchCart from "@/hooks/use-fetchCart";
+import initializeSDK from "@/utils/cashfreeinitialize";
+import { useMutation } from "@tanstack/react-query";
 import { ShoppingBag } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 // Sample electronics cart data
 
 const Cart = () => {
 	const { cart } = useFetchCart();
+	const navigate = useNavigate();
+
+	const { mutateAsync: verifyingPayment } = useMutation({
+		mutationFn: verifyPayment,
+		onSuccess: () => {
+			navigate("/payment/success");
+		},
+		onError: () => {
+			navigate("/payment/failed");
+		},
+	});
+
+	const { mutateAsync: checkingOut } = useMutation({
+		mutationFn: makePayment,
+		onMutate: () => {
+			toast.loading("Making Payment", { id: "payment-id" });
+		},
+		onSuccess: async (res) => {
+			const cashfree = await initializeSDK();
+			const sessionId = res.data.payment_session_id;
+			const orderId = res.data.order_id;
+			const checkoutOptions = {
+				paymentSessionId: sessionId,
+				redirectTarget: "_modal",
+			};
+			await cashfree.checkout(checkoutOptions);
+			toast.dismiss("payment-id");
+			await verifyingPayment(orderId);
+		},
+		onError: (err) => {
+			toast.error(err.message);
+			toast.dismiss("payment-id");
+		},
+	});
 
 	// Calculate cart totals
 	const subtotal = cart?.reduce(
@@ -21,6 +60,9 @@ const Cart = () => {
 	const shipping = (subtotal as number) > 0 ? 12.99 : 0;
 	const tax = (subtotal as number) * 0.08;
 	const total = (subtotal as number) + shipping + tax;
+	const handlePayment = async () => {
+		await checkingOut(total);
+	};
 
 	return (
 		<div className="min-h-screen flex flex-col">
@@ -98,6 +140,7 @@ const Cart = () => {
 									<Button
 										className="w-full py-6 bg-blue-600 hover:bg-blue-700"
 										size="lg"
+										onClick={handlePayment}
 									>
 										<ShoppingBag className="mr-2 h-5 w-5" />
 										Proceed to Checkout
