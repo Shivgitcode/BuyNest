@@ -56,7 +56,7 @@ export const login = async (
 		const user = await User.findOne({
 			where: { email: loginData.email },
 			attributes: {
-				exclude: ["createdAt", "updatedAt"],
+				exclude: ["updatedAt"],
 			},
 		});
 		if (!user) {

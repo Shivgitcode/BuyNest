@@ -6,6 +6,8 @@ export type User = {
 	password: string;
 	role: string;
 	address: string;
+	phoneNumber: number;
+	createdAt: string;
 };
 export type ResponseProps = {
 	message: string;
@@ -18,6 +20,10 @@ export const FormSchema = z.object({
 	email: z.string().email({ message: "invalid email" }),
 	password: z.string(),
 	address: z.string(),
+	phoneNumber: z
+		.string()
+		.min(10, { message: "invalid phoneNumber" })
+		.max(10, { message: "phone number cannot exceed 10 digits" }),
 });
 
 export type FormTypes = z.infer<typeof FormSchema>;
@@ -27,6 +33,7 @@ export type SignUpProp = {
 	email: string;
 	password: string;
 	address: string;
+	phoneNumber: number;
 };
 
 export const LoginSchema = z.object({

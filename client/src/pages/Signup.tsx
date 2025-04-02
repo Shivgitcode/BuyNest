@@ -44,6 +44,7 @@ const Signup = () => {
 			email: data.email,
 			password: data.password,
 			address: data.address,
+			phoneNumber: Number.parseInt(data.phoneNumber),
 		});
 	};
 	return (
@@ -118,6 +119,19 @@ const Signup = () => {
 							/>
 							<p className="text-xs text-gray-500 mt-1 ">
 								{errors.email ? errors.email.message : ""}
+							</p>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="phonenumber">phone number</Label>
+							<Input
+								id="phonenumber"
+								type="text"
+								placeholder="Enter your phoneNumber"
+								className="h-12"
+								{...register("phoneNumber", { required: true })}
+							/>
+							<p className="text-xs text-gray-500 mt-1 ">
+								{errors.phoneNumber ? errors.phoneNumber.message : ""}
 							</p>
 						</div>
 						<div className="space-y-2">

@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import Protected from "./components/Protected";
+import ProfileLayout from "./components/profile/ProfileLayout";
 import AuthContextWrapper from "./context/AuthContext";
 import Cart from "./pages/Cart";
 import Index from "./pages/Index";
@@ -17,6 +18,9 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminOrders from "./pages/admin/Orders";
 import AdminProductForm from "./pages/admin/ProductForm";
 import AdminProducts from "./pages/admin/Products";
+import Orders from "./pages/profile/Orders";
+import Profile from "./pages/profile/Profile";
+import Settings from "./pages/profile/Settings";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +41,32 @@ const routes = createBrowserRouter([
 	{
 		path: "/product/:id",
 		element: <ProductDetail />,
+	},
+	{
+		path: "/profile",
+		element: (
+			<Protected requiredRole="user">
+				<ProfileLayout />
+			</Protected>
+		),
+		children: [
+			{
+				path: "orders",
+				element: <Orders />,
+			},
+			{
+				element: (
+					<Protected>
+						<Profile />
+					</Protected>
+				),
+				index: true,
+			},
+			{
+				path: "settings",
+				element: <Settings />,
+			},
+		],
 	},
 	{
 		path: "/auth",

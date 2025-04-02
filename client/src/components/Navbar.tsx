@@ -1,32 +1,13 @@
-import { logoutUser } from "@/actions/logoutUser";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import useFetchCart from "@/hooks/use-fetchCart";
-import { useMutation } from "@tanstack/react-query";
-import { LogOut, Search, ShoppingCart, User } from "lucide-react";
-import { Link, useNavigate } from "react-router";
-import { toast } from "sonner";
+import { Search, ShoppingCart } from "lucide-react";
+import { Link } from "react-router";
+import DropDownNav from "./DropDownNav";
 
 const Navbar = () => {
-	const { isAuthenticated, setUser } = useAuth();
 	const { cart } = useFetchCart();
-	const router = useNavigate();
-	const { mutateAsync: logout } = useMutation({
-		mutationFn: logoutUser,
-		onMutate: () => {
-			toast.loading("logging out", { id: "logout-user" });
-		},
-		onSuccess: (data) => {
-			toast.success(data?.message);
-			toast.dismiss("logout-user");
-			setUser(null);
-			router("/auth/login");
-		},
-		onError: (err) => {
-			toast.error(err.message);
-			toast.dismiss("logout-user");
-		},
-	});
+	const { isAuthenticated } = useAuth();
 
 	return (
 		<header className="border-b bg-white/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
@@ -72,8 +53,10 @@ const Navbar = () => {
 					<Button variant="ghost" size="icon" className="hidden md:flex">
 						<Search className="h-5 w-5" />
 					</Button>
-					{isAuthenticated ? (
-						<Button variant="ghost" size="icon" onClick={() => logout()}>
+					<DropDownNav />
+
+					{/* {isAuthenticated ? (
+						<Button variant="ghost" size="icon">
 							<LogOut className="h-5 w-5" />
 						</Button>
 					) : (
@@ -82,7 +65,7 @@ const Navbar = () => {
 								<User className="h-5 w-5" />
 							</Button>
 						</Link>
-					)}
+					)} */}
 
 					<Link to="/cart">
 						<Button variant="ghost" size="icon" className="relative">

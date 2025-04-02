@@ -7,6 +7,7 @@ export const SignupSchema = z.object({
 	password: z.string({ message: "enter password" }),
 	role: z.string({ message: "Please mention your role" }).optional(),
 	address: z.string({ message: "Please add your Address" }),
+	phoneNumber: z.number().min(10, { message: "phone number invalid" }),
 });
 export type SignUp = z.infer<typeof SignupSchema> & { id: string };
 
