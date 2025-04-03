@@ -24,7 +24,7 @@ const User = sequelize.define("User", {
 		defaultValue: "user",
 	},
 	phoneNumber: {
-		type: DataTypes.INTEGER,
+		type: DataTypes.BIGINT,
 	},
 	address: {
 		type: DataTypes.STRING,

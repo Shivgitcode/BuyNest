@@ -73,3 +73,13 @@ export const UpdateSchema = z.object({
 	image: z.string().optional(),
 });
 export type UpdateProp = z.infer<typeof UpdateSchema>;
+
+export const UpdateUserSchema = z.object({
+	username: z.string().optional(),
+	email: z.string().optional(),
+	password: z.string().optional(),
+	phoneNumber: z.string().optional(),
+	address: z.string().optional(),
+});
+
+export type UpdateUserProps = z.infer<typeof UpdateUserSchema>;

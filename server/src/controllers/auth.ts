@@ -28,6 +28,7 @@ export const signup = async (
 			email: signupBody.email,
 			role: signupBody.role,
 			address: signupBody.address,
+			phoneNumber: signupBody.phoneNumber,
 		});
 		res.status(201).json({
 			message: "user created",

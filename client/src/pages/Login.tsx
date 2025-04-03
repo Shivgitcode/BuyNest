@@ -30,6 +30,7 @@ const Login = () => {
 		},
 		onError: (err) => {
 			toast.error(err.message);
+			router("/auth/signup");
 			toast.dismiss("login-toast");
 		},
 	});

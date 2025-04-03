@@ -122,9 +122,9 @@ const Signup = () => {
 							</p>
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="phonenumber">phone number</Label>
+							<Label htmlFor="phoneNumber">phone number</Label>
 							<Input
-								id="phonenumber"
+								id="phoneNumber"
 								type="text"
 								placeholder="Enter your phoneNumber"
 								className="h-12"

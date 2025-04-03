@@ -43,6 +43,29 @@ export const LoginSchema = z.object({
 	password: z.string({ message: "password required" }),
 });
 
+export const ProfileSchema = z.object({
+	username: z.string(),
+	email: z.string(),
+	phoneNumber: z.string(),
+	address: z.string(),
+});
+
+export const PasswordSchema = z
+	.object({
+		currentPassword: z
+			.string()
+			.min(1, { message: "Current password is required" }),
+		newPassword: z.string(),
+		confirmPassword: z.string(),
+	})
+	.refine((data) => data.newPassword === data.confirmPassword, {
+		message: "Password don't match",
+		path: ["confirmPassword"],
+	});
+
+export type ProfileProps = z.infer<typeof ProfileSchema>;
+export type PasswordProps = z.infer<typeof PasswordSchema>;
+
 export type LoginProps = z.infer<typeof LoginSchema>;
 
 export type ProductProps = {

@@ -1,3 +1,4 @@
+import { updateUser } from "@/actions/updateUser";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -8,10 +9,63 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
+import {
+	type PasswordProps,
+	PasswordSchema,
+	type ProfileProps,
+	ProfileSchema,
+} from "@/types/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const Settings = () => {
+	const { user } = useAuth();
+	const { mutateAsync: updateProfile } = useMutation({
+		mutationFn: updateUser,
+		onMutate: async () => {
+			toast.loading("Updating your info", { id: "profile-id" });
+		},
+		onSuccess: async (data) => {
+			toast.success(data.message);
+			toast.dismiss("profile-id");
+		},
+		onError: (err) => {
+			toast.error(err.message);
+			toast.dismiss("profile-id");
+		},
+	});
+	const profileForm = useForm<ProfileProps>({
+		resolver: zodResolver(ProfileSchema),
+		defaultValues: {
+			username: user?.username || "",
+			email: user?.email || "",
+			phoneNumber: user?.phoneNumber.toString() || "",
+			address: user?.address || "",
+		},
+	});
+	const passwordForm = useForm<PasswordProps>({
+		resolver: zodResolver(PasswordSchema),
+	});
+	const onProfileSubmit = async (data: ProfileProps) => {
+		console.log(data);
+		await updateProfile({ profileData: data, userId: user?.id as string });
+	};
+	const onPasswordSubmit = async (data: PasswordProps) => {
+		console.log(data);
+	};
 	return (
 		<div className="space-y-8">
 			<Card>
@@ -19,29 +73,71 @@ const Settings = () => {
 					<CardTitle>Personal Information</CardTitle>
 					<CardDescription>Update your personal details</CardDescription>
 				</CardHeader>
-				<CardContent className="space-y-4">
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div className="space-y-2">
-							<Label htmlFor="name">Full Name</Label>
-							<Input id="name" defaultValue="John Doe" />
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="email">Email Address</Label>
-							<Input
-								id="email"
-								type="email"
-								defaultValue="john.doe@example.com"
-							/>
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="phone">Phone Number</Label>
-							<Input id="phone" type="tel" defaultValue="+1 (555) 123-4567" />
-						</div>
-					</div>
-				</CardContent>
-				<CardFooter>
-					<Button>Save Changes</Button>
-				</CardFooter>
+				<Form {...profileForm}>
+					<form onSubmit={profileForm.handleSubmit(onProfileSubmit)}>
+						<CardContent className="space-y-4">
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<FormField
+									control={profileForm.control}
+									name="username"
+									render={({ field }) => (
+										<FormItem className="space-y-2">
+											<FormLabel>Full Name</FormLabel>
+											<FormControl>
+												<Input {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								<FormField
+									control={profileForm.control}
+									name="email"
+									render={({ field }) => (
+										<FormItem className="space-y-2">
+											<FormLabel>Email Address</FormLabel>
+											<FormControl>
+												<Input type="email" {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								<FormField
+									control={profileForm.control}
+									name="phoneNumber"
+									render={({ field }) => (
+										<FormItem className="space-y-2">
+											<FormLabel>Phone Number</FormLabel>
+											<FormControl>
+												<Input type="tel" {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={profileForm.control}
+									name="address"
+									render={({ field }) => (
+										<FormItem className="space-y-2">
+											<FormLabel>Address</FormLabel>
+											<FormControl>
+												<Input type="tel" {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							</div>
+						</CardContent>
+						<CardFooter>
+							<Button type="submit">Save Changes</Button>
+						</CardFooter>
+					</form>
+				</Form>
 			</Card>
 
 			<Card>
@@ -49,23 +145,56 @@ const Settings = () => {
 					<CardTitle>Password</CardTitle>
 					<CardDescription>Change your password</CardDescription>
 				</CardHeader>
-				<CardContent className="space-y-4">
-					<div className="space-y-2">
-						<Label htmlFor="current-password">Current Password</Label>
-						<Input id="current-password" type="password" />
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="new-password">New Password</Label>
-						<Input id="new-password" type="password" />
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="confirm-password">Confirm Password</Label>
-						<Input id="confirm-password" type="password" />
-					</div>
-				</CardContent>
-				<CardFooter>
-					<Button>Update Password</Button>
-				</CardFooter>
+				<Form {...passwordForm}>
+					<form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}>
+						<CardContent className="space-y-4">
+							<FormField
+								control={passwordForm.control}
+								name="currentPassword"
+								render={({ field }) => (
+									<FormItem className="space-y-2">
+										<FormLabel>Current Password</FormLabel>
+										<FormControl>
+											<Input type="password" {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={passwordForm.control}
+								name="newPassword"
+								render={({ field }) => (
+									<FormItem className="space-y-2">
+										<FormLabel>New Password</FormLabel>
+										<FormControl>
+											<Input type="password" {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={passwordForm.control}
+								name="confirmPassword"
+								render={({ field }) => (
+									<FormItem className="space-y-2">
+										<FormLabel>Confirm Password</FormLabel>
+										<FormControl>
+											<Input type="password" {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</CardContent>
+						<CardFooter>
+							<Button type="submit">Update Password</Button>
+						</CardFooter>
+					</form>
+				</Form>
 			</Card>
 
 			<Card>
