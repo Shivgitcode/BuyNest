@@ -1,3 +1,4 @@
+import { passwordUpdate } from "@/actions/passwordUpdate";
 import { updateUser } from "@/actions/updateUser";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +33,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 const Settings = () => {
-	const { user } = useAuth();
+	const { user, setUser } = useAuth();
 	const { mutateAsync: updateProfile } = useMutation({
 		mutationFn: updateUser,
 		onMutate: async () => {
@@ -40,11 +41,21 @@ const Settings = () => {
 		},
 		onSuccess: async (data) => {
 			toast.success(data.message);
+			setUser(data.data[1][0]);
 			toast.dismiss("profile-id");
 		},
 		onError: (err) => {
 			toast.error(err.message);
 			toast.dismiss("profile-id");
+		},
+	});
+	const { mutateAsync: updatingPassword } = useMutation({
+		mutationFn: passwordUpdate,
+		onSuccess: async (data) => {
+			toast.success(data.message);
+		},
+		onError: async (data) => {
+			toast.error(data.message);
 		},
 	});
 	const profileForm = useForm<ProfileProps>({
@@ -65,6 +76,7 @@ const Settings = () => {
 	};
 	const onPasswordSubmit = async (data: PasswordProps) => {
 		console.log(data);
+		updatingPassword(data);
 	};
 	return (
 		<div className="space-y-8">

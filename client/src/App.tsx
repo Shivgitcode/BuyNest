@@ -139,7 +139,7 @@ const App = () => (
 	<QueryClientProvider client={queryClient}>
 		<TooltipProvider>
 			<AuthContextWrapper>
-				<Sonner />
+				<Sonner position="top-center" />
 				<RouterProvider router={routes} />
 			</AuthContextWrapper>
 		</TooltipProvider>
