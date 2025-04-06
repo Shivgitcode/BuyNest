@@ -53,6 +53,7 @@ const Settings = () => {
 		mutationFn: passwordUpdate,
 		onSuccess: async (data) => {
 			toast.success(data.message);
+			passwordForm.reset();
 		},
 		onError: async (data) => {
 			toast.error(data.message);

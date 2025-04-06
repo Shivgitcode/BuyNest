@@ -10,6 +10,9 @@ const Order = sequelize.define("Orders", {
 	userId: {
 		type: DataTypes.TEXT,
 	},
+	totalItems: {
+		type: DataTypes.INTEGER,
+	},
 	orderId: {
 		type: DataTypes.TEXT,
 	},

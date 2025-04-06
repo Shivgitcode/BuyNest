@@ -8,5 +8,5 @@ authRouter.post("/signup", signup);
 authRouter.post("/login", login);
 authRouter.get("/auth/user", checkAuth, getUser);
 authRouter.post("/logout", logout);
-authRouter.put("/user/:userId", updateUser);
-authRouter.put("/user/password", updatePassword);
+authRouter.put("/user/password", checkAuth, updatePassword);
+authRouter.put("/user/:userId", checkAuth, updateUser);

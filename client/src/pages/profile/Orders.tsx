@@ -1,3 +1,4 @@
+import { allOrders } from "@/actions/getAllOrders";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -23,6 +24,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
@@ -68,14 +70,18 @@ const mockOrders = [
 const Orders = () => {
 	const [statusFilter, setStatusFilter] = useState("all");
 	const [searchQuery, setSearchQuery] = useState("");
+	const { data: orders, isPending } = useQuery({
+		queryKey: ["orders"],
+		queryFn: allOrders,
+	});
 
 	// Filter orders based on status and search query
-	const filteredOrders = mockOrders.filter((order) => {
+	const filteredOrders = orders?.data?.filter((order) => {
 		const matchesStatus =
 			statusFilter === "all" ||
 			order.status.toLowerCase() === statusFilter.toLowerCase();
 		const matchesSearch =
-			order.id.includes(searchQuery) ||
+			order.order_id.includes(searchQuery) ||
 			order.date.toLowerCase().includes(searchQuery.toLowerCase());
 		return matchesStatus && matchesSearch;
 	});
@@ -130,16 +136,25 @@ const Orders = () => {
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{filteredOrders.length > 0 ? (
-									filteredOrders.map((order) => (
-										<TableRow key={order.id}>
-											<TableCell className="font-medium">#{order.id}</TableCell>
-											<TableCell>{order.date}</TableCell>
+								{!isPending ? (
+									orders.data?.map((order) => (
+										<TableRow key={order.order_id}>
+											<TableCell className="font-medium">
+												#{order.order_id}
+											</TableCell>
+											<TableCell>
+												{new Date(order.createdAt).toLocaleDateString("us-en", {
+													weekday: "long",
+													year: "numeric",
+													month: "long",
+													day: "numeric",
+												})}
+											</TableCell>
 											<TableCell>
 												<span
 													className={`inline-block px-2 py-1 rounded-md text-xs font-medium
                           ${
-														order.status === "Delivered"
+														order.order_status === "PAID"
 															? "bg-green-100 text-green-800"
 															: order.status === "Processing"
 																? "bg-blue-100 text-blue-800"
@@ -148,12 +163,12 @@ const Orders = () => {
 																	: "bg-red-100 text-red-800"
 													}`}
 												>
-													{order.status}
+													{order.order_status}
 												</span>
 											</TableCell>
-											<TableCell>{order.items} items</TableCell>
+											<TableCell>{order.totalItems} items</TableCell>
 											<TableCell className="text-right">
-												${order.total.toFixed(2)}
+												${order.order_amount.toFixed(2)}
 											</TableCell>
 											<TableCell className="text-right">
 												<Button variant="outline" size="sm">

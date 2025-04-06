@@ -65,10 +65,11 @@ export const updatePassword = async (
 	try {
 		const { password, checkPassword } = req.body;
 		const user = req.user;
+		logger.debug(JSON.stringify(user));
 		const findUser = await User.findOne({
 			where: { id: user?.id },
 		});
-		console.log(findUser?.toJSON().password);
+		console.log("this is my user", findUser?.toJSON().password);
 		const isPassword = await bcrypt.compare(
 			checkPassword,
 			findUser?.toJSON().password,

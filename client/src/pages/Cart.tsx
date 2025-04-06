@@ -60,8 +60,12 @@ const Cart = () => {
 	const shipping = (subtotal as number) > 0 ? 12.99 : 0;
 	const tax = (subtotal as number) * 0.08;
 	const total = (subtotal as number) + shipping + tax;
+	const totalItems = cart?.reduce(
+		(total, item) => total + item.totalQuantity,
+		0,
+	);
 	const handlePayment = async () => {
-		await checkingOut(total);
+		await checkingOut({ orderAmount: total, totalItems: totalItems as number });
 	};
 
 	return (

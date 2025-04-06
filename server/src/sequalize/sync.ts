@@ -1,5 +1,6 @@
 import { logger } from "../logger/devLogger";
 import { defineAssociations } from "./associations";
+import "../models";
 import { sequelize } from "./db";
 const syncDb = async () => {
 	try {
