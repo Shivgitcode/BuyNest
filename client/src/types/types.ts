@@ -84,7 +84,7 @@ export type ProductProps = {
 
 export type CartProps = {
 	id: string;
-	totalQuantity: number;
+	quantity: number;
 	userId: string;
 	productId: string;
 	Product: ProductProps;

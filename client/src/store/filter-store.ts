@@ -21,5 +21,4 @@ export const useFilter = create<FilterProps>((set) => ({
 		});
 	},
 	setNullFilter: () => set({ filterCategories: [] }),
-	setPriceFilter: (range: [number, number]) => set({}),
 }));

@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import useFetchCart from "@/hooks/use-fetchCart";
+import { useCartStore } from "@/store/cart-store";
 import initializeSDK from "@/utils/cashfreeinitialize";
 import { useMutation } from "@tanstack/react-query";
 import { ShoppingBag } from "lucide-react";
@@ -17,6 +18,7 @@ import { toast } from "sonner";
 
 const Cart = () => {
 	const { cart } = useFetchCart();
+	const { cartItems } = useCartStore((state) => state);
 	const navigate = useNavigate();
 
 	const { mutateAsync: verifyingPayment } = useMutation({
@@ -53,17 +55,14 @@ const Cart = () => {
 	});
 
 	// Calculate cart totals
-	const subtotal = cart?.reduce(
-		(total, item) => total + item.Product.price * item.totalQuantity,
+	const subtotal = cartItems?.reduce(
+		(total, item) => total + item.Product.price * item.quantity,
 		0,
 	);
 	const shipping = (subtotal as number) > 0 ? 12.99 : 0;
 	const tax = (subtotal as number) * 0.08;
 	const total = (subtotal as number) + shipping + tax;
-	const totalItems = cart?.reduce(
-		(total, item) => total + item.totalQuantity,
-		0,
-	);
+	const totalItems = cart?.reduce((total, item) => total + item.quantity, 0);
 	const handlePayment = async () => {
 		await checkingOut({ orderAmount: total, totalItems: totalItems as number });
 	};

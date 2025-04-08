@@ -49,7 +49,7 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 						<button type="button" className="text-gray-500 hover:text-gray-700">
 							<MinusCircle className="h-5 w-5" />
 						</button>
-						<span className="mx-2 w-6 text-center">{item.totalQuantity}</span>
+						<span className="mx-2 w-6 text-center">{item.quantity}</span>
 						<button type="button" className="text-gray-500 hover:text-gray-700">
 							<PlusCircle className="h-5 w-5" />
 						</button>
@@ -61,7 +61,7 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 					<div className="md:hidden text-sm font-medium text-gray-500">
 						Total:
 					</div>
-					<div>${(item.Product.price * item.totalQuantity).toFixed(2)}</div>
+					<div>${(item.Product.price * item.quantity).toFixed(2)}</div>
 				</div>
 
 				{/* Remove - Desktop */}

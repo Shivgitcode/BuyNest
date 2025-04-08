@@ -1,12 +1,14 @@
 import type { NextFunction, Request, Response } from "express";
-import { Op, QueryTypes } from "sequelize";
+import { type Model, Op, QueryTypes } from "sequelize";
 import { logger } from "../logger/devLogger";
-import CartItem from "../models/cart.model";
+import CartItem, {
+	type CartItemAttributes,
+	type CartItemCreationAttributes,
+} from "../models/cart.model";
 import Category from "../models/categories.model";
 import Product from "../models/product.model";
 import { sequelize } from "../sequalize/db";
 import { category } from "../utils/data";
-import type { RawQueryResult } from "../utils/types";
 
 export const getProducts = async (
 	req: Request,
@@ -67,27 +69,50 @@ export const addToCart = async (
 		const id = req.user?.id;
 		logger.debug(id as string, { file: "products.ts" });
 		const { productId, quantity } = req.body;
-		const addInCart = await CartItem.create(
-			{
+		let addInCart: Model<CartItemAttributes, CartItemCreationAttributes>;
+		let addInCart2: [
+			affectedRows: Model<CartItemAttributes, CartItemCreationAttributes>[],
+			affectedCount?: number | undefined,
+		];
+		const findProduct = await CartItem.findOne({
+			where: {
+				userId: id,
 				productId,
-				userId: id as string,
-				quantity: quantity as number,
-			},
-			{
-				include: {
-					model: Product,
-				},
-			},
-		);
-		const cartItemWithProduct = await CartItem.findOne({
-			where: { id: addInCart.id },
-			include: {
-				model: Product,
 			},
 		});
+		logger.debug(findProduct?.toJSON().id as string, { name: "debug id" });
+		if (findProduct) {
+			logger.debug(findProduct?.toJSON().id as string, {
+				name: "inside findProduct",
+			});
+
+			addInCart2 = await CartItem.increment(
+				{ quantity: 1 },
+				{
+					where: {
+						id: findProduct.toJSON().id,
+					},
+				},
+			);
+		} else {
+			addInCart = await CartItem.create(
+				{
+					productId,
+					userId: id as string,
+					quantity: quantity as number,
+				},
+				{
+					include: {
+						model: Product,
+					},
+					returning: true,
+				},
+			);
+		}
+
 		res.status(200).json({
 			message: "product added to Cart",
-			data: cartItemWithProduct,
+			data: findProduct ? addInCart2[0][0][0] : addInCart,
 		});
 	} catch (error) {
 		if (error instanceof Error) next(error);
@@ -102,40 +127,16 @@ export const getCartItems = async (
 	try {
 		const id = req.user?.id;
 
-		const query = `
-      SELECT 
-        "Carts"."productId",
-        SUM("Carts"."quantity") as "totalQuantity",
-        "Products"."id" as "product_id",
-        "Products"."product" as "product_name",
-        "Products"."price" as "product_price",
-        "Products"."image" as "product_image"
-      FROM "Carts"
-      JOIN "Products" ON "Carts"."productId" = "Products"."id"
-      WHERE "Carts"."userId" = :userId
-      GROUP BY "Carts"."productId", "Products"."id", "Products"."product", "Products"."price", "Products"."image"
-      ORDER BY MAX("Carts"."createdAt") DESC
-    `;
-
-		const results = await sequelize.query<RawQueryResult>(query, {
-			replacements: { userId: id },
-			type: QueryTypes.SELECT,
-		});
-
-		const formattedResults = results.map((item) => ({
-			productId: item.productId,
-			totalQuantity: Number.parseInt(item.totalQuantity),
-			Product: {
-				id: item.product_id,
-				product: item.product_name,
-				price: item.product_price,
-				image: item.product_image,
+		const getAllCartItems = await CartItem.findAll({
+			where: {
+				userId: id,
 			},
-		}));
+			include: Product,
+		});
 
 		res.status(200).json({
 			message: "cart items",
-			data: formattedResults,
+			data: getAllCartItems,
 		});
 	} catch (error) {
 		console.error("Error fetching cart items:", error);
@@ -269,6 +270,85 @@ export const getProductsByPrice = async (
 		res.status(200).json({
 			message: "product by price",
 			data: findByRange,
+		});
+	} catch (error) {
+		if (error instanceof Error) next(error);
+	}
+};
+
+export const removeFromCartOne = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const user = req.user;
+		const id = req.params.productId;
+		const findProduct = await CartItem.findOne({
+			where: {
+				id,
+				userId: user?.id,
+			},
+		});
+		const quantity = findProduct?.toJSON().quantity as number;
+		if (quantity > 0) {
+			await CartItem.decrement(
+				{ quantity: 1 },
+				{
+					where: {
+						productId: id,
+					},
+				},
+			);
+		} else {
+			await CartItem.destroy({
+				where: {
+					productId: id,
+				},
+			});
+		}
+
+		res.status(200).json({
+			message: "item removed",
+		});
+	} catch (error) {
+		if (error instanceof Error) next(error);
+	}
+};
+export const removeFromCart = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const user = req.user;
+		const id = req.params.productId;
+		const findProduct = await CartItem.findOne({
+			where: {
+				id,
+				userId: user?.id,
+			},
+		});
+		const quantity = findProduct?.toJSON().quantity as number;
+		if (quantity > 0) {
+			await CartItem.decrement(
+				{ quantity: 1 },
+				{
+					where: {
+						productId: id,
+					},
+				},
+			);
+		} else {
+			await CartItem.destroy({
+				where: {
+					productId: id,
+				},
+			});
+		}
+
+		res.status(200).json({
+			message: "item removed",
 		});
 	} catch (error) {
 		if (error instanceof Error) next(error);
