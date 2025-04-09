@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import useFetchCart from "@/hooks/use-fetchCart";
 import useFetchProducts from "@/hooks/useFetchProducts";
 import { useCartStore } from "@/store/cart-store";
-import type { ProductProps } from "@/types/types";
+import type { CartProps, ProductProps } from "@/types/types";
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
@@ -41,7 +41,7 @@ const ProductCard = ({
 			navigate("/auth/login");
 		}
 		const oneProduct = productData?.find((el) => el.id === id);
-		// addToCart(oneProduct as ProductProps)
+		addToCart(oneProduct as CartProps);
 		addInCart(oneProduct as ProductProps);
 	};
 

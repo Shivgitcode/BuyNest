@@ -11,13 +11,13 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 					<div className="flex items-center space-x-4">
 						<div className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden bg-gray-100">
 							<img
-								src={item.Product.image}
-								alt={item.Product.product}
+								src={item.image}
+								alt={item.product}
 								className="w-full h-full object-contain"
 							/>
 						</div>
 						<div className="flex flex-col">
-							<h3 className="font-medium">{item.Product.product}</h3>
+							<h3 className="font-medium">{item.product}</h3>
 							<div className="text-sm text-gray-500 mt-1">
 								{/* <span>Options: {item.options}</span> */}
 							</div>
@@ -37,7 +37,7 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 					<div className="md:hidden text-sm font-medium text-gray-500">
 						Price:
 					</div>
-					<div>${item.Product.price.toFixed(2)}</div>
+					<div>${item.price.toFixed(2)}</div>
 				</div>
 
 				{/* Quantity */}
@@ -61,7 +61,7 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 					<div className="md:hidden text-sm font-medium text-gray-500">
 						Total:
 					</div>
-					<div>${(item.Product.price * item.quantity).toFixed(2)}</div>
+					<div>${(item.price * item.quantity).toFixed(2)}</div>
 				</div>
 
 				{/* Remove - Desktop */}

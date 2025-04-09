@@ -35,8 +35,9 @@ export default function useFetchCart() {
 		enabled: isAuthenticated,
 	});
 	useEffect(() => {
+		console.log("hello done");
 		setCartItems(cart as CartProps[]);
-	}, [isAuthenticated, user]);
+	}, [user]);
 
 	return { cart, isLoading, isFetching, addInCart };
 }

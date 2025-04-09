@@ -126,12 +126,20 @@ export const getCartItems = async (
 ) => {
 	try {
 		const id = req.user?.id;
+		const rawQuery = `SELECT 
+    p.*, 
+    c.quantity 
+FROM 
+    "Products" p
+JOIN 
+    "Carts" c ON p.id = c."productId" 
+WHERE 
+    c."userId" = '391b0c2e-4477-4e9a-9110-036c0ab922fa';
+`;
 
-		const getAllCartItems = await CartItem.findAll({
-			where: {
-				userId: id,
-			},
-			include: Product,
+		const getAllCartItems = await sequelize.query(rawQuery, {
+			replacements: { id },
+			type: QueryTypes.SELECT,
 		});
 
 		res.status(200).json({

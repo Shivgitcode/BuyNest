@@ -20,6 +20,8 @@ const Cart = () => {
 	const { cart } = useFetchCart();
 	const { cartItems } = useCartStore((state) => state);
 	const navigate = useNavigate();
+	console.log(cart, "this is from fetch query");
+	console.log(cartItems, "this is from zustand store");
 
 	const { mutateAsync: verifyingPayment } = useMutation({
 		mutationFn: verifyPayment,
@@ -56,13 +58,16 @@ const Cart = () => {
 
 	// Calculate cart totals
 	const subtotal = cartItems?.reduce(
-		(total, item) => total + item.Product.price * item.quantity,
+		(total, item) => total + item.price * item.quantity,
 		0,
 	);
 	const shipping = (subtotal as number) > 0 ? 12.99 : 0;
 	const tax = (subtotal as number) * 0.08;
 	const total = (subtotal as number) + shipping + tax;
-	const totalItems = cart?.reduce((total, item) => total + item.quantity, 0);
+	const totalItems = cartItems?.reduce(
+		(total, item) => total + item.quantity,
+		0,
+	);
 	const handlePayment = async () => {
 		await checkingOut({ orderAmount: total, totalItems: totalItems as number });
 	};
@@ -75,7 +80,7 @@ const Cart = () => {
 				<div className="container mx-auto px-4">
 					<h1 className="text-3xl font-bold mb-8">Your Tech Cart</h1>
 
-					{(cart?.length as number) > 0 ? (
+					{(cartItems?.length as number) > 0 ? (
 						<div className="flex flex-col lg:flex-row gap-8">
 							{/* Cart Items */}
 							<div className="flex-grow lg:w-2/3">
@@ -89,7 +94,7 @@ const Cart = () => {
 
 									<Separator className="mb-4 md:hidden" />
 
-									{cart?.map((item) => (
+									{cartItems?.map((item) => (
 										<CartItemCard key={item.id} item={item} />
 									))}
 

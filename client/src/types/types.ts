@@ -88,7 +88,7 @@ export type CartProps = {
 	userId: string;
 	productId: string;
 	Product: ProductProps;
-};
+} & ProductProps;
 export type ProductFormProps = {
 	product: string;
 	desc: string;
