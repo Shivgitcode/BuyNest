@@ -13,6 +13,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { stream } from "./logger/devLogger";
 import { adminRouter } from "./routes/admin.route";
+import { cartRouter } from "./routes/cart.route";
 import { orderRouter } from "./routes/orders.route";
 import { productRouter } from "./routes/product.route";
 import { defineAssociations } from "./sequalize/associations";
@@ -37,6 +38,7 @@ app.use(
 );
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", authRouter, productRouter, adminRouter, orderRouter);
+app.use("/api/v1", cartRouter);
 
 app.use(
 	(err: ErrorHandler, req: Request, res: Response, next: NextFunction) => {
@@ -46,6 +48,7 @@ app.use(
 			message: "Some error occured",
 			error: message,
 		});
+		console.log("i am inside error");
 		console.log(err);
 		next(err);
 	},

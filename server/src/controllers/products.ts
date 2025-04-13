@@ -1,10 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
-import { type Model, Op, QueryTypes } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
+
 import { logger } from "../logger/devLogger";
-import CartItem, {
-	type CartItemAttributes,
-	type CartItemCreationAttributes,
-} from "../models/cart.model";
 import Category from "../models/categories.model";
 import Product from "../models/product.model";
 import { sequelize } from "../sequalize/db";
@@ -39,6 +36,7 @@ export const getAllProducts = async (
 	next: NextFunction,
 ) => {
 	try {
+		logger.debug("Fetching all products");
 		const allProducts = await Product.findAll({
 			include: {
 				model: Category,
@@ -57,99 +55,6 @@ export const getAllProducts = async (
 		});
 	} catch (error) {
 		next(error);
-	}
-};
-
-export const addToCart = async (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) => {
-	try {
-		const id = req.user?.id;
-		logger.debug(id as string, { file: "products.ts" });
-		const { productId, quantity } = req.body;
-		let addInCart: Model<CartItemAttributes, CartItemCreationAttributes>;
-		let addInCart2: [
-			affectedRows: Model<CartItemAttributes, CartItemCreationAttributes>[],
-			affectedCount?: number | undefined,
-		];
-		const findProduct = await CartItem.findOne({
-			where: {
-				userId: id,
-				productId,
-			},
-		});
-		logger.debug(findProduct?.toJSON().id as string, { name: "debug id" });
-		if (findProduct) {
-			logger.debug(findProduct?.toJSON().id as string, {
-				name: "inside findProduct",
-			});
-
-			addInCart2 = await CartItem.increment(
-				{ quantity: 1 },
-				{
-					where: {
-						id: findProduct.toJSON().id,
-					},
-				},
-			);
-		} else {
-			addInCart = await CartItem.create(
-				{
-					productId,
-					userId: id as string,
-					quantity: quantity as number,
-				},
-				{
-					include: {
-						model: Product,
-					},
-					returning: true,
-				},
-			);
-		}
-
-		res.status(200).json({
-			message: "product added to Cart",
-			data: findProduct ? addInCart2[0][0][0] : addInCart,
-		});
-	} catch (error) {
-		if (error instanceof Error) next(error);
-	}
-};
-
-export const getCartItems = async (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) => {
-	try {
-		const id = req.user?.id;
-		const rawQuery = `SELECT 
-    p.*, 
-    c.quantity 
-FROM 
-    "Products" p
-JOIN 
-    "Carts" c ON p.id = c."productId" 
-WHERE 
-    c."userId" = '391b0c2e-4477-4e9a-9110-036c0ab922fa';
-`;
-
-		const getAllCartItems = await sequelize.query(rawQuery, {
-			replacements: { id },
-			type: QueryTypes.SELECT,
-		});
-
-		res.status(200).json({
-			message: "cart items",
-			data: getAllCartItems,
-		});
-	} catch (error) {
-		console.error("Error fetching cart items:", error);
-		if (error instanceof Error) next(error);
-		else next(new Error("Unknown error occurred"));
 	}
 };
 
@@ -278,85 +183,6 @@ export const getProductsByPrice = async (
 		res.status(200).json({
 			message: "product by price",
 			data: findByRange,
-		});
-	} catch (error) {
-		if (error instanceof Error) next(error);
-	}
-};
-
-export const removeFromCartOne = async (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) => {
-	try {
-		const user = req.user;
-		const id = req.params.productId;
-		const findProduct = await CartItem.findOne({
-			where: {
-				id,
-				userId: user?.id,
-			},
-		});
-		const quantity = findProduct?.toJSON().quantity as number;
-		if (quantity > 0) {
-			await CartItem.decrement(
-				{ quantity: 1 },
-				{
-					where: {
-						productId: id,
-					},
-				},
-			);
-		} else {
-			await CartItem.destroy({
-				where: {
-					productId: id,
-				},
-			});
-		}
-
-		res.status(200).json({
-			message: "item removed",
-		});
-	} catch (error) {
-		if (error instanceof Error) next(error);
-	}
-};
-export const removeFromCart = async (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) => {
-	try {
-		const user = req.user;
-		const id = req.params.productId;
-		const findProduct = await CartItem.findOne({
-			where: {
-				id,
-				userId: user?.id,
-			},
-		});
-		const quantity = findProduct?.toJSON().quantity as number;
-		if (quantity > 0) {
-			await CartItem.decrement(
-				{ quantity: 1 },
-				{
-					where: {
-						productId: id,
-					},
-				},
-			);
-		} else {
-			await CartItem.destroy({
-				where: {
-					productId: id,
-				},
-			});
-		}
-
-		res.status(200).json({
-			message: "item removed",
 		});
 	} catch (error) {
 		if (error instanceof Error) next(error);

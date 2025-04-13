@@ -1,8 +1,16 @@
+import useFetchCart from "@/hooks/use-fetchCart";
 import type { CartProps } from "@/types/types";
 import { MinusCircle, PlusCircle, Trash2 } from "lucide-react";
 import { Separator } from "../ui/separator";
 
 export default function CartItemCard({ item }: { item: CartProps }) {
+	const { removeItem, updateQuantity } = useFetchCart();
+	const handleRemoveCartItems = (id: string) => {
+		removeItem(id);
+	};
+	const handleItemQuantity = async (id: string, quantity: number) => {
+		await updateQuantity({ id, quantity });
+	};
 	return (
 		<div key={item.id} className="mb-6">
 			<div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
@@ -11,19 +19,20 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 					<div className="flex items-center space-x-4">
 						<div className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden bg-gray-100">
 							<img
-								src={item.image}
-								alt={item.product}
+								src={item.Product.image}
+								alt={item.Product.product}
 								className="w-full h-full object-contain"
 							/>
 						</div>
 						<div className="flex flex-col">
-							<h3 className="font-medium">{item.product}</h3>
+							<h3 className="font-medium">{item.Product.product}</h3>
 							<div className="text-sm text-gray-500 mt-1">
 								{/* <span>Options: {item.options}</span> */}
 							</div>
 							<button
 								type="button"
 								className="flex items-center text-sm text-gray-500 hover:text-red-500 transition-colors mt-2 md:hidden"
+								onClick={() => handleRemoveCartItems(item.id)}
 							>
 								<Trash2 className="h-4 w-4 mr-1" />
 								Remove
@@ -37,7 +46,7 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 					<div className="md:hidden text-sm font-medium text-gray-500">
 						Price:
 					</div>
-					<div>${item.price.toFixed(2)}</div>
+					<div>${item.Product.price.toFixed(2)}</div>
 				</div>
 
 				{/* Quantity */}
@@ -46,11 +55,23 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 						Quantity:
 					</div>
 					<div className="flex items-center justify-start md:justify-center">
-						<button type="button" className="text-gray-500 hover:text-gray-700">
+						<button
+							type="button"
+							className="text-gray-500 hover:text-gray-700"
+							onClick={() => {
+								handleItemQuantity(item.id, item.quantity - 1);
+							}}
+						>
 							<MinusCircle className="h-5 w-5" />
 						</button>
 						<span className="mx-2 w-6 text-center">{item.quantity}</span>
-						<button type="button" className="text-gray-500 hover:text-gray-700">
+						<button
+							type="button"
+							className="text-gray-500 hover:text-gray-700"
+							onClick={() => {
+								handleItemQuantity(item.id, item.quantity + 1);
+							}}
+						>
 							<PlusCircle className="h-5 w-5" />
 						</button>
 					</div>
@@ -61,7 +82,7 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 					<div className="md:hidden text-sm font-medium text-gray-500">
 						Total:
 					</div>
-					<div>${(item.price * item.quantity).toFixed(2)}</div>
+					<div>${(item.Product.price * item.quantity).toFixed(2)}</div>
 				</div>
 
 				{/* Remove - Desktop */}
@@ -69,6 +90,7 @@ export default function CartItemCard({ item }: { item: CartProps }) {
 					<button
 						type="button"
 						className="text-gray-400 hover:text-red-500 transition-colors"
+						onClick={() => handleRemoveCartItems(item.id)}
 					>
 						<Trash2 className="h-5 w-5" />
 					</button>

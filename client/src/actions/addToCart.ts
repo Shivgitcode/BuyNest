@@ -7,7 +7,7 @@ export const addToCart = async (
 	try {
 		const quantity = data.quantity || 1;
 		const res = await api.post(
-			"/products/cart",
+			"/cart/",
 			{
 				productId: data.id,
 				quantity,
@@ -16,6 +16,7 @@ export const addToCart = async (
 				withCredentials: true,
 			},
 		);
+		console.log("inside add to cart", res.data.data);
 		return res.data.data;
 	} catch (error) {
 		if (error instanceof Error) throw error;

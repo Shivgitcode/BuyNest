@@ -6,9 +6,8 @@ import { Link } from "react-router";
 import DropDownNav from "./DropDownNav";
 
 const Navbar = () => {
-	const { cart } = useFetchCart();
 	const { isAuthenticated } = useAuth();
-
+	const { cart } = useFetchCart();
 	return (
 		<header className="border-b bg-white/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
 			<div className="container mx-auto px-4 py-4 flex justify-between items-center">

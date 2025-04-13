@@ -26,7 +26,7 @@ const Index = () => {
 	console.log(productsData, "inside index");
 
 	return (
-		<div className="min-h-screen flex flex-col">
+		<div className="min-h-screen flex flex-col font-nunito">
 			<Navbar />
 
 			<main className="flex-grow pt-16">
