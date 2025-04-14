@@ -17,6 +17,8 @@ jobs:
                 node-version: "20"
             - name: install dependencies
               run: npm install --force
+            - name: installing legacy dependencies
+              run: npm install --legacy-peer-deps
               working-directory: client
             - name: building the project
               run: npm run build
