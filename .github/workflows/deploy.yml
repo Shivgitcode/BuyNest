@@ -14,18 +14,19 @@ jobs:
             - name: use nodejs
               uses: actions/setup-node@v3
               with:
-                node-version: "23"
-            - name: going to the client directory 
-              run: cd client
+                node-version: "18"
             - name: install dependencies
               run: npm install
+              working-directory: client
             - name: building the project
               run: npm run build
+              working-directory: client
+
             - name: Archive production artifact
               uses: actions/upload-artifact@master
               with:
                 name: build
-                path: build
+                path: client/build
     deploy:
         needs: build
         runs-on: ubuntu-latest
