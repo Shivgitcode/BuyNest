@@ -1,0 +1,45 @@
+name: build and deploy
+
+on:
+  push:
+    branches:
+        - master
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@master
+            - name: use nodejs
+              uses: actions/setup-node@v3
+              with:
+                node-version: "23"
+            - name: going to the client directory 
+              run: cd client
+            - name: install dependencies
+              run: npm install
+            - name: building the project
+              run: npm run build
+            - name: Archive production artifact
+              uses: actions/upload-artifact@master
+              with:
+                name: build
+                path: build
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@master
+            - name: Download Artifact
+              uses: actions/download-artifact@master
+              with:
+                name: build
+                path: build
+            - name: Deploy to Firebase
+              uses: w9jds/firebase-action@master
+              with:
+                args: deploy --only hosting
+              env:
+                FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}} 
