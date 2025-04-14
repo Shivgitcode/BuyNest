@@ -2,10 +2,14 @@ import { Sequelize } from "sequelize";
 import { logger } from "../logger/devLogger";
 import "../utils/config";
 
-export const sequelize = new Sequelize("buynest", "postgres", "root", {
-	host: "localhost",
+export const sequelize = new Sequelize(process.env.DB_URL as string, {
 	dialect: "postgres",
-	logging: false,
+	dialectOptions: {
+		ssl: {
+			require: true,
+			rejectUnauthorized: false,
+		},
+	},
 });
 
 export async function dbConnect() {
@@ -18,3 +22,5 @@ export async function dbConnect() {
 		return false;
 	}
 }
+
+dbConnect();

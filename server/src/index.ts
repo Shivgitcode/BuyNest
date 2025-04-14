@@ -39,6 +39,9 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", authRouter, productRouter, adminRouter, orderRouter);
 app.use("/api/v1", cartRouter);
+app.get("/", (req: Request, res: Response) => {
+	res.send("hello");
+});
 
 app.use(
 	(err: ErrorHandler, req: Request, res: Response, next: NextFunction) => {
