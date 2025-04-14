@@ -61,10 +61,15 @@ jobs:
           ls -la client/.firebaserc
           cat client/firebase.json
 
+      - name: Initialize Firebase
+        run: |
+          cd client
+          firebase use buynest-c70cf
+
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v2.0.0
         with:
-          args: deploy --only hosting
+          args: deploy --only hosting --project buynest-c70cf
           working-directory: client
         env:
           FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}} 
