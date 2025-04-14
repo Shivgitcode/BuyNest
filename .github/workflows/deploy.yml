@@ -16,7 +16,7 @@ jobs:
               with:
                 node-version: "23"
             - name: install dependencies
-              run: npm install
+              run: npm install --force
               working-directory: client
             - name: building the project
               run: npm run build
