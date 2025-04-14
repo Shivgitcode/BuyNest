@@ -12,7 +12,7 @@ const Navbar = () => {
 		<header className="border-b bg-white/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
 			<div className="container mx-auto px-4 py-4 flex justify-between items-center">
 				<div className="flex items-center space-x-10">
-					<Link to="/" className="font-bold text-xl tracking-tight">
+					<Link to="/" className="font-extrabold text-xl tracking-tight">
 						BuyNest
 					</Link>
 					<nav className="hidden md:flex space-x-8">
