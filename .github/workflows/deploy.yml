@@ -1,48 +1,54 @@
-name: build and deploy
+name: Build and Deploy
 
 on:
   push:
     branches:
-        - master
+      - master
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repo
-              uses: actions/checkout@master
-            - name: use nodejs
-              uses: actions/setup-node@v3
-              with:
-                node-version: "20"
-            - name: install dependencies
-              run: npm install --force
-            - name: installing legacy dependencies
-              run: npm install --legacy-peer-deps
-              working-directory: client
-            - name: building the project
-              run: npm run build
-              working-directory: client
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-            - name: Archive production artifact
-              uses: actions/upload-artifact@master
-              with:
-                name: build
-                path: client/build
-    deploy:
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repo
-              uses: actions/checkout@master
-            - name: Download Artifact
-              uses: actions/download-artifact@master
-              with:
-                name: build
-            - name: Deploy to Firebase
-              uses: w9jds/firebase-action@v2.0.0
-              with:
-                args: deploy --only hosting
-                working-directory: client
-              env:
-                FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}} 
+      - name: Use Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install root dependencies
+        run: npm install --force
+
+      - name: Install client dependencies (legacy)
+        run: npm install --legacy-peer-deps
+        working-directory: client
+
+      - name: Build React project
+        run: npm run build
+        working-directory: client
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: client/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+
+      - name: Deploy to Firebase Hosting
+        uses: w9jds/firebase-action@v2.0.0
+        with:
+          args: deploy --only hosting --project-dir client
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
