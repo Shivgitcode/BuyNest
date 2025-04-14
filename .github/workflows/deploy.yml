@@ -29,14 +29,17 @@ jobs:
         run: npm run build
         working-directory: client
 
+      - name: Verify Firebase files
+        run: |
+          ls -la client/firebase.json
+          ls -la client/.firebaserc
+          cat client/firebase.json
+
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build
-          path: |
-            client/build
-            client/firebase.json
-            client/.firebaserc
+          path: client/
 
   deploy:
     needs: build
@@ -49,7 +52,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build
-          path: client
+          path: .
+
+      - name: Verify deployment files
+        run: |
+          ls -la client/
+          ls -la client/firebase.json
+          ls -la client/.firebaserc
+          cat client/firebase.json
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v2.0.0
