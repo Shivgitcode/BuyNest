@@ -11,7 +11,6 @@ import { Slider } from "@/components/ui/slider";
 import useFetchCategory from "@/hooks/useFetchCategory";
 import { useFilter } from "@/store/filter-store";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import CategorySkeleton from "./CategorySkeleton";
 import Spinner from "./Spinner";
 
@@ -22,7 +21,6 @@ interface FilterSidebarProps {
 const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 	const { isFetching, isLoading, categories } = useFetchCategory();
 	const queryClient = useQueryClient();
-	const [sliderValue, setSliderValue] = useState();
 
 	const { filterCategories, setFilterCategories, setNullFilter } = useFilter(
 		(state) => state,

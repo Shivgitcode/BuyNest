@@ -73,7 +73,7 @@ const AdminProductForm = () => {
 
 		productFormData.append("product", formData.product);
 		productFormData.append("desc", formData.desc);
-		productFormData.append("price", formData.price);
+		productFormData.append("price", String(formData.price));
 		productFormData.append("category", formData.categoryId);
 
 		if (file) {

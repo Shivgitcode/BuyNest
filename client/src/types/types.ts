@@ -93,6 +93,17 @@ export type ProductFormProps = {
 	product: string;
 	desc: string;
 	category: string;
-	price: string;
+	price: number;
 	img: string;
+};
+
+export type OrderProps = {
+	message: string;
+	data: {
+		order_id: string;
+		totalItems: string;
+		order_amount: number;
+		order_status: string;
+		createdAt: string;
+	}[];
 };

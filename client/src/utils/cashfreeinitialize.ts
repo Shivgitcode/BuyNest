@@ -1,3 +1,4 @@
+// @ts-ignore
 import { load } from "@cashfreepayments/cashfree-js";
 
 const initializeSDK = async () => {

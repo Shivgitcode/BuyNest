@@ -5,21 +5,13 @@ import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import { ProductCardSkeleton } from "@/components/ProductCardSkeleton";
 import { Button } from "@/components/ui/button";
-// import { productsData } from "@/utils/data";
 import { categoriesData } from "@/utils/data";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
 import { Link } from "react-router";
 
 const Index = () => {
-	const [isLoaded, setIsLoaded] = useState(true);
-	const {
-		data: productsData,
-		isError,
-		isFetching,
-		isPending,
-	} = useQuery({
+	const { data: productsData, isPending } = useQuery({
 		queryKey: ["featured"],
 		queryFn: getFeaturedProducts,
 	});

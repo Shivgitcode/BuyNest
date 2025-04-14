@@ -29,43 +29,6 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 
 // Mock data for orders
-const mockOrders = [
-	{
-		id: "12345",
-		date: "June 15, 2023",
-		status: "Delivered",
-		total: 149.99,
-		items: 3,
-	},
-	{
-		id: "12344",
-		date: "May 28, 2023",
-		status: "Delivered",
-		total: 84.5,
-		items: 2,
-	},
-	{
-		id: "12343",
-		date: "April 12, 2023",
-		status: "Delivered",
-		total: 199.99,
-		items: 1,
-	},
-	{
-		id: "12342",
-		date: "March 5, 2023",
-		status: "Delivered",
-		total: 56.99,
-		items: 2,
-	},
-	{
-		id: "12341",
-		date: "February 20, 2023",
-		status: "Delivered",
-		total: 129.99,
-		items: 4,
-	},
-];
 
 const Orders = () => {
 	const [statusFilter, setStatusFilter] = useState("all");
@@ -79,10 +42,10 @@ const Orders = () => {
 	const filteredOrders = orders?.data?.filter((order) => {
 		const matchesStatus =
 			statusFilter === "all" ||
-			order.status.toLowerCase() === statusFilter.toLowerCase();
+			order.order_status.toLowerCase() === statusFilter.toLowerCase();
 		const matchesSearch =
 			order.order_id.includes(searchQuery) ||
-			order.date.toLowerCase().includes(searchQuery.toLowerCase());
+			order.createdAt.toLowerCase().includes(searchQuery.toLowerCase());
 		return matchesStatus && matchesSearch;
 	});
 
@@ -137,7 +100,7 @@ const Orders = () => {
 							</TableHeader>
 							<TableBody>
 								{!isPending ? (
-									orders.data?.map((order) => (
+									filteredOrders?.map((order) => (
 										<TableRow key={order.order_id}>
 											<TableCell className="font-medium">
 												#{order.order_id}
@@ -156,9 +119,9 @@ const Orders = () => {
                           ${
 														order.order_status === "PAID"
 															? "bg-green-100 text-green-800"
-															: order.status === "Processing"
+															: order.order_status === "Processing"
 																? "bg-blue-100 text-blue-800"
-																: order.status === "Shipped"
+																: order.order_status === "Shipped"
 																	? "bg-purple-100 text-purple-800"
 																	: "bg-red-100 text-red-800"
 													}`}

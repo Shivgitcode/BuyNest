@@ -99,9 +99,6 @@ const Cart = () => {
 												← Continue Shopping
 											</Button>
 										</Link>
-										<Button variant="outline" className="text-sm">
-											Update Cart
-										</Button>
 									</div>
 								</div>
 							</div>
