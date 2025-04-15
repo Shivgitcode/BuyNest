@@ -19,10 +19,9 @@ jobs:
       - name: docker build and push
         uses: docker/build-push-action@v2
         with:
-            context: .
-            file: ./Dockerfile
+            context: ./server
+            file: ./server/Dockerfile
             push: true
-            working-directory: server
             tags: shiv413/buynest-server:latest
       - name: verify docker image
         run : docker pull shiv413/buynest-server:latest
