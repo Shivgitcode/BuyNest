@@ -10,6 +10,7 @@ declare global {
 		}
 	}
 }
+
 export const checkAuth = async (
 	req: Request,
 	res: Response,
@@ -33,7 +34,7 @@ export const checkAuth = async (
 export const checkAdmin = async (
 	req: Request,
 	res: Response,
-	next: NextFunction,
+	next: NextFunctionType,
 ) => {
 	try {
 		const token = req.cookies.jwt;
