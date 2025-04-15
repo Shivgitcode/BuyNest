@@ -34,7 +34,7 @@ export const checkAuth = async (
 export const checkAdmin = async (
 	req: Request,
 	res: Response,
-	next: NextFunctionType,
+	next: NextFunction,
 ) => {
 	try {
 		const token = req.cookies.jwt;
