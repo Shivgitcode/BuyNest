@@ -20,7 +20,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
             context: .
-            file: ./DockerFile
+            file: ./Dockerfile
             push: true
             working-directory: server
             tags: shiv413/buynest-server:latest
