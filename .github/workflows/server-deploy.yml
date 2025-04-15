@@ -1,0 +1,40 @@
+name: deploying server
+
+on:
+   push:
+    branches:
+        - master
+
+jobs:
+    deploy:
+      runs-on: ubuntu
+      steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+      - name: docker login
+        uses: docker/login-action@v1
+        with:
+            username: ${{secrets.DOCKER_USERNAME}}
+            password: ${{secrets.DOCKER_PASSWORD}}
+      - name: docker build and push
+        uses: docker/build-push-action@v2
+        with:
+            context: .
+            file: ./DockerFile
+            push: true
+            working-directory: server
+            tags: shiv413/buynest-server:latest
+      - name: verify docker image
+        run : docker pull shiv413/buynest-server:latest
+      - name: run on ec2
+        uses: appleboy/ssh-action@master
+        with:
+            host: ${{secrets.SSH_HOST}}
+            username: ${{secrets.SSH_USERNAME}}
+            key: ${{secrets.SSH_KEY}}
+            script: |
+                   sudo docker pull shiv413/buynest-server
+                   sudo docker stop web-app || true
+                   sudo docker rm web-app || true
+                   sudo docker run -d --name web-app -p 5000:5000 shiv413/buynest-server
+    
