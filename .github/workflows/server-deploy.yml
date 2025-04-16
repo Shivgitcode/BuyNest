@@ -35,5 +35,5 @@ jobs:
                    sudo docker pull shiv413/buynest-server
                    sudo docker stop web-app || true
                    sudo docker rm web-app || true
-                   sudo docker run -d --name web-app -p 5000:5000 shiv413/buynest-server
+                   sudo docker run -d --name web-app --env-file .env -p 5000:5000 shiv413/buynest-server
     

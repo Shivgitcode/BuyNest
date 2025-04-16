@@ -40,7 +40,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", authRouter, productRouter, adminRouter, orderRouter);
 app.use("/api/v1", cartRouter);
 app.get("/", (req: Request, res: Response) => {
-	res.send("hello");
+	res.send("hello everyone");
 });
 
 app.use(
