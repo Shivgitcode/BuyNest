@@ -13,7 +13,7 @@ export const createOrder = async (
 	next: NextFunction,
 ) => {
 	try {
-		const { orderAmount, totalItems } = req.body;
+		const { orderAmount, totalItems, phoneNumber } = req.body;
 
 		const user = req.user;
 		const orderId = generateId();
@@ -23,7 +23,7 @@ export const createOrder = async (
 			order_id: orderId,
 			customer_details: {
 				customer_id: user?.id as string,
-				customer_phone: "9999999999",
+				customer_phone: phoneNumber.toString(),
 				customer_name: user?.username,
 				customer_email: user?.email,
 			},
@@ -55,6 +55,7 @@ export const verifyPayment = async (
 			"2025-01-01",
 			orderId,
 		);
+		console.log(paymentVerification);
 		res.status(200).json({
 			message: "payment successfull",
 		});

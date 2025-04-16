@@ -1,27 +1,26 @@
+// import "./utils/config";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import express, {
 	type NextFunction,
 	type Request,
 	type Response,
 } from "express";
+import morgan from "morgan";
 import type ErrorHandler from "./ErrorHandler/error";
 import { logger } from "./logger/devLogger";
-import { authRouter } from "./routes/auth.route";
-import "./utils/config";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import morgan from "morgan";
 import { stream } from "./logger/devLogger";
 import { adminRouter } from "./routes/admin.route";
+import { authRouter } from "./routes/auth.route";
 import { cartRouter } from "./routes/cart.route";
 import { orderRouter } from "./routes/orders.route";
 import { productRouter } from "./routes/product.route";
 import { defineAssociations } from "./sequalize/associations";
+import env from "./utils/env";
 const app = express();
 const port = process.env.PORT || 5000;
 
 defineAssociations();
-console.log(process.env.PORT);
-console.log(process.env.DEPLOYED_URL);
 
 app.use(morgan(":method :url :status - :response-time ms", { stream }));
 app.use(express.json());
@@ -29,8 +28,8 @@ app.use(cookieParser());
 app.use(
 	cors({
 		origin:
-			process.env.NODE_ENV === "production"
-				? process.env.DEPLOYED_URL
+			env.NODE_ENV === "production"
+				? env.DEPLOYED_URL
 				: "http://localhost:5173",
 		credentials: true,
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],

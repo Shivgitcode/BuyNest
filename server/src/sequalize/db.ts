@@ -1,8 +1,8 @@
 import { Sequelize } from "sequelize";
 import { logger } from "../logger/devLogger";
-import "../utils/config";
+import env from "../utils/env";
 
-export const sequelize = new Sequelize(process.env.DB_URL as string, {
+export const sequelize = new Sequelize(env.DB_URL as string, {
 	dialect: "postgres",
 	dialectOptions: {
 		ssl: {

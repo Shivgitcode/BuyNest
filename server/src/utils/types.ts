@@ -83,3 +83,51 @@ export const UpdateUserSchema = z.object({
 });
 
 export type UpdateUserProps = z.infer<typeof UpdateUserSchema>;
+
+export const ProcessEnvSchema = z.object({
+	PORT: z.string(),
+	NODE_ENV: z.enum(["production", "development"]),
+	JWTSECRET: z.string(),
+	DB_URL: z.string(),
+	ACCESS_ID: z.string(),
+	SECRET_ACCESS_ID: z.string(),
+	REGION: z.string(),
+	BUCKET: z.string(),
+	DEPLOYED_URL: z.string(),
+	CASHFREE_APP_ID: z.string(),
+	CASHFREE_SECRET_KEY: z.string(),
+	TWILIO_ACCOUNT_ID: z.string(),
+	TWILIO_AUTH_TOKEN: z.string(),
+	TWILIO_PHONE_NUMBER: z.string(),
+});
+
+export const TwilioSchema = z.object({
+	account_sid: z.string(),
+	api_version: z.string(),
+	body: z.string(),
+	date_created: z.string(),
+	date_sent: z.string(),
+	date_updated: z.string(),
+	direction: z.string(),
+	error_code: z.null(),
+	error_message: z.null(),
+	from: z.string(),
+	num_media: z.string(),
+	num_segments: z.string(),
+	price: z.null(),
+	price_unit: z.null(),
+	messaging_service_sid: z.string(),
+	sid: z.string(),
+	status: z.string(),
+	subresource_uris: z.object({
+		media: z.string(),
+	}),
+	tags: z.object({
+		campaign_name: z.string(),
+		message_type: z.string(),
+	}),
+	to: z.string(),
+	uri: z.string(),
+});
+
+export type TwilioProps = z.infer<typeof TwilioSchema>;

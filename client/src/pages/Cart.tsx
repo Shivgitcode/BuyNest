@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/AuthContext";
 import useFetchCart from "@/hooks/use-fetchCart";
 import initializeSDK from "@/utils/cashfreeinitialize";
 import { useMutation } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 const Cart = () => {
 	const { cart } = useFetchCart();
 	const navigate = useNavigate();
+	const { user } = useAuth();
 
 	const { mutateAsync: verifyingPayment } = useMutation({
 		mutationFn: verifyPayment,
@@ -64,7 +66,11 @@ const Cart = () => {
 	const total = (subtotal as number) + shipping + tax;
 	const totalItems = cart?.reduce((total, item) => total + item.quantity, 0);
 	const handlePayment = async () => {
-		await checkingOut({ orderAmount: total, totalItems: totalItems as number });
+		await checkingOut({
+			orderAmount: total,
+			totalItems: totalItems as number,
+			phoneNumber: user?.phoneNumber as number,
+		});
 	};
 
 	return (
