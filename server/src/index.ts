@@ -6,7 +6,6 @@ import express, {
 import type ErrorHandler from "./ErrorHandler/error";
 import { logger } from "./logger/devLogger";
 import { authRouter } from "./routes/auth.route";
-import { dbConnect } from "./sequalize/db";
 import "./utils/config";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -21,7 +20,6 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 defineAssociations();
-dbConnect();
 
 app.use(morgan(":method :url :status - :response-time ms", { stream }));
 app.use(express.json());
@@ -29,7 +27,7 @@ app.use(cookieParser());
 app.use(
 	cors({
 		origin:
-			process.env.NODE === "production"
+			process.env.NODE_ENV === "production"
 				? process.env.DEPLOYED_URL
 				: "http://localhost:5173",
 		credentials: true,
