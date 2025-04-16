@@ -20,6 +20,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 defineAssociations();
+console.log(process.env.PORT);
+console.log(process.env.DEPLOYED_URL);
 
 app.use(morgan(":method :url :status - :response-time ms", { stream }));
 app.use(express.json());
@@ -32,6 +34,7 @@ app.use(
 				: "http://localhost:5173",
 		credentials: true,
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+		allowedHeaders: ["Content-Type", "Authorization"],
 	}),
 );
 app.use(express.urlencoded({ extended: true }));
