@@ -36,7 +36,7 @@ jobs:
                    sudo docker pull shiv413/buynest-server
                    sudo docker stop web-app || true
                    sudo docker rm web-app || true
-                   sudo docker run -d --name web-app  -p 5000:5000 --env-file .env shiv413/buynest-server
+                   sudo docker run -d --name web-app  -p 5000:5000 shiv413/buynest-server
       - name: Run on EC2 (Retry if failed)
         if: steps.ec2_deploy_1.outcome == 'failure'
         uses: appleboy/ssh-action@master
@@ -48,6 +48,6 @@ jobs:
             sudo docker pull shiv413/buynest-server:latest
             sudo docker stop web-app || true
             sudo docker rm web-app || true
-            sudo docker run -d --name web-app -p 5000:5000 --env-file /path/to/.env shiv413/buynest-server:latest
+            sudo docker run -d --name web-app -p 5000:5000 shiv413/buynest-server:latest
         
     
