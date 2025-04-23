@@ -2,7 +2,7 @@ import { DataTypes, type Model } from "sequelize";
 import { sequelize } from "../sequalize/db";
 export interface CartItemAttributes {
 	id: string;
-	quantity: number | null;
+	quantity: number | undefined;
 	productId: string;
 	userId: string;
 }

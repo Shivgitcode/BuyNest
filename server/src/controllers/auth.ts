@@ -2,7 +2,10 @@ import bcrypt from "bcrypt";
 import type { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../ErrorHandler/error";
 import { logger } from "../logger/devLogger";
+import { OTP } from "../models";
 import User from "../models/user.model";
+import generateOtp from "../utils/generateOtp";
+import { transportMail } from "../utils/nodemailer";
 import { signedToken } from "../utils/tokenGenerator";
 import { LoginSchema, type SignUp, SignupSchema } from "../utils/types";
 export const signup = async (
@@ -70,20 +73,78 @@ export const login = async (
 			res.status(401).json({
 				message: "Invalid password or username",
 			});
+			return;
 		}
-		const token = await signedToken(user?.toJSON() as SignUp);
-		res.cookie("jwt", token, {
-			maxAge: 60 * 60 * 1000,
-			httpOnly: true,
-			sameSite: "lax",
-			secure: true,
+		await OTP.destroy({
+			where: {
+				email: user?.toJSON().email,
+			},
+		});
+		const { otp, expiresAt } = generateOtp();
+		await transportMail.sendMail({
+			from: "toji082004@gmail.com",
+			to: user?.toJSON().email,
+			subject: "Otp for login Verification",
+			html: `<h1>Your otp is ${otp} expires in 5 min</h1>`,
+		});
+		const creatingOtp = await OTP.create({
+			otp,
+			email: user?.toJSON().email,
+			phoneNumber: user?.toJSON().phoneNumber,
+			expiresAt,
 		});
 		res.status(200).json({
-			message: "Logged In Successfully",
-			user,
+			message: "otp sent on your mail",
 		});
 	} catch (error) {
 		if (error instanceof Error) next(error);
+	}
+};
+
+export const verifyOtp = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { otp, email } = req.body;
+		const findOtp = await OTP.findOne({
+			where: {
+				email,
+			},
+		});
+		if (findOtp?.toJSON().expiresAt < Date.now()) {
+			res.status(401).json({
+				message: "otp expired",
+			});
+			await OTP.destroy({
+				where: {
+					email,
+				},
+			});
+		}
+		const user = await User.findOne({
+			where: {
+				email,
+			},
+		});
+		const verifyOtp = findOtp?.toJSON().otp.toString() === otp;
+		if (!verifyOtp) {
+			next(new ErrorHandler("OTP Invalid", 401));
+			return;
+		}
+		signedToken(user?.toJSON() as SignUp, res);
+		await OTP.destroy({
+			where: {
+				email,
+			},
+		});
+		res.status(200).json({
+			message: "Otp verified",
+			user,
+		});
+	} catch (err) {
+		if (err instanceof Error) next(err);
 	}
 };
 

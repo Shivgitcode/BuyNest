@@ -1,7 +1,7 @@
 import { DataTypes, type Model } from "sequelize";
 import { sequelize } from "../sequalize/db";
 // Define the attributes of the Product model
-interface ProductAttributes {
+export interface ProductAttributes {
 	id: string;
 	product: string;
 	desc: string;

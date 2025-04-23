@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminOrders from "./pages/admin/Orders";
 import AdminProductForm from "./pages/admin/ProductForm";
 import AdminProducts from "./pages/admin/Products";
+import OrderSummary from "./pages/profile/OrderSummary";
 import Orders from "./pages/profile/Orders";
 import Profile from "./pages/profile/Profile";
 import Settings from "./pages/profile/Settings";
@@ -50,6 +51,10 @@ const routes = createBrowserRouter([
 			</Protected>
 		),
 		children: [
+			{
+				path: "orders/:orderId",
+				element: <OrderSummary />,
+			},
 			{
 				path: "orders",
 				element: <Orders />,

@@ -1,10 +1,12 @@
 import { loginUser } from "@/actions/loginUser";
+import { verifyOtp } from "@/actions/verifyOtp";
+import OTPVerification from "@/components/OTPVerification";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
-import { type LoginProps, LoginSchema, type User } from "@/types/types";
+import { type LoginProps, LoginSchema } from "@/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { EyeIcon, EyeOffIcon, LogIn } from "lucide-react";
@@ -17,6 +19,20 @@ const Login = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const { setUser, user } = useAuth();
 	const router = useNavigate();
+	const [showOtp, setShowOtp] = useState(false);
+	const { mutateAsync: handleVerify } = useMutation({
+		mutationFn: verifyOtp,
+		onMutate: async () => {
+			toast.loading("Verifying otp", { id: "otp-verification" });
+		},
+		onSuccess: (data) => {
+			toast.success(data.message);
+			toast.dismiss("otp-verification");
+			setUser(data.user);
+			router("/");
+		},
+	});
+	const handleResend = () => {};
 	const { mutateAsync: signin } = useMutation({
 		mutationFn: loginUser,
 		onMutate: () => {
@@ -25,8 +41,7 @@ const Login = () => {
 		onSuccess: (data) => {
 			toast.success(data?.message);
 			toast.dismiss("login-toast");
-			setUser(data?.user as User);
-			router("/");
+			setShowOtp(true);
 		},
 		onError: (err) => {
 			toast.error(err.message);
@@ -45,6 +60,7 @@ const Login = () => {
 	const {
 		handleSubmit,
 		register,
+		getValues,
 		formState: { errors },
 	} = useForm<LoginProps>({
 		resolver: zodResolver(LoginSchema),
@@ -56,7 +72,6 @@ const Login = () => {
 
 	return (
 		<div className="min-h-screen flex flex-col md:flex-row">
-			{/* Left Side - Image */}
 			<div className="hidden md:block md:w-1/2 bg-gray-100 relative animate-fade-in">
 				<img
 					src="https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=800"
@@ -74,7 +89,6 @@ const Login = () => {
 				</div>
 			</div>
 
-			{/* Right Side - Login Form */}
 			<div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8 md:p-16 animate-scale-in">
 				<div className="w-full max-w-md">
 					<div className="text-center mb-8">
@@ -85,94 +99,105 @@ const Login = () => {
 						<p className="text-gray-600">Enter your details to continue</p>
 					</div>
 
-					<form className="space-y-6" onSubmit={handleSubmit(submitForm)}>
-						<div className="space-y-2">
-							<Label htmlFor="email">Email address</Label>
-							<Input
-								id="email"
-								type="email"
-								placeholder="Enter your email"
-								className="h-12"
-								{...register("email", { required: true })}
-							/>
-							<p className="text-xs text-gray-500 mt-1 ">
-								{errors.email ? errors.email.message : ""}
-							</p>
-						</div>
-
-						<div className="space-y-2">
-							<div className="flex justify-between items-center">
-								<Label htmlFor="password">Password</Label>
-								<Link
-									to="/auth/reset-password"
-									className="text-sm text-gray-600 hover:text-black"
-								>
-									Forgot password?
-								</Link>
-							</div>
-							<div className="relative">
+					{!showOtp ? (
+						<form className="space-y-6" onSubmit={handleSubmit(submitForm)}>
+							<div className="space-y-2">
+								<Label htmlFor="email">Email address</Label>
 								<Input
-									id="password"
-									type={showPassword ? "text" : "password"}
-									placeholder="Enter your password"
-									className="h-12 pr-10"
-									{...register("password", { required: true })}
+									id="email"
+									type="email"
+									placeholder="Enter your email"
+									className="h-12"
+									{...register("email", { required: true })}
 								/>
-								<button
-									type="button"
-									className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-									onClick={() => setShowPassword(!showPassword)}
-								>
-									{showPassword ? (
-										<EyeOffIcon className="h-5 w-5" />
-									) : (
-										<EyeIcon className="h-5 w-5" />
-									)}
-								</button>
 								<p className="text-xs text-gray-500 mt-1 ">
-									{errors.password ? errors.password.message : ""}
+									{errors.email ? errors.email.message : ""}
 								</p>
 							</div>
-						</div>
 
-						<div className="flex items-center space-x-2">
-							<Checkbox id="remember" />
-							<Label htmlFor="remember" className="text-sm font-normal">
-								Remember me
-							</Label>
-						</div>
-
-						<Button
-							type="submit"
-							className="w-full h-12 flex items-center justify-center gap-2"
-						>
-							<LogIn className="h-5 w-5" />
-							Sign In
-						</Button>
-					</form>
-
-					<div className="mt-8">
-						<div className="relative">
-							<div className="absolute inset-0 flex items-center">
-								<div className="w-full border-t border-gray-200" />
+							<div className="space-y-2">
+								<div className="flex justify-between items-center">
+									<Label htmlFor="password">Password</Label>
+									<Link
+										to="/auth/reset-password"
+										className="text-sm text-gray-600 hover:text-black"
+									>
+										Forgot password?
+									</Link>
+								</div>
+								<div className="relative">
+									<Input
+										id="password"
+										type={showPassword ? "text" : "password"}
+										placeholder="Enter your password"
+										className="h-12 pr-10"
+										{...register("password", { required: true })}
+									/>
+									<button
+										type="button"
+										className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+										onClick={() => setShowPassword(!showPassword)}
+									>
+										{showPassword ? (
+											<EyeOffIcon className="h-5 w-5" />
+										) : (
+											<EyeIcon className="h-5 w-5" />
+										)}
+									</button>
+									<p className="text-xs text-gray-500 mt-1 ">
+										{errors.password ? errors.password.message : ""}
+									</p>
+								</div>
 							</div>
-							<div className="relative flex justify-center text-sm">
-								<span className="px-2 bg-white text-gray-500">
-									Or continue with
-								</span>
-							</div>
-						</div>
-					</div>
 
-					<p className="text-center mt-8 text-gray-600">
-						Don't have an account?{" "}
-						<Link
-							to="/auth/signup"
-							className="text-black font-medium hover:underline"
-						>
-							Sign up
-						</Link>
-					</p>
+							<div className="flex items-center space-x-2">
+								<Checkbox id="remember" />
+								<Label htmlFor="remember" className="text-sm font-normal">
+									Remember me
+								</Label>
+							</div>
+
+							<Button
+								type="submit"
+								className="w-full h-12 flex items-center justify-center gap-2"
+							>
+								<LogIn className="h-5 w-5" />
+								Sign In
+							</Button>
+						</form>
+					) : (
+						<OTPVerification
+							email={getValues("email")}
+							onResend={handleResend}
+							onVerify={handleVerify}
+						/>
+					)}
+					{!showOtp && (
+						<>
+							<div className="mt-8">
+								<div className="relative">
+									<div className="absolute inset-0 flex items-center">
+										<div className="w-full border-t border-gray-200" />
+									</div>
+									<div className="relative flex justify-center text-sm">
+										<span className="px-2 bg-white text-gray-500">
+											Or continue with
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<p className="text-center mt-8 text-gray-600">
+								Don't have an account?{" "}
+								<Link
+									to="/auth/signup"
+									className="text-black font-medium hover:underline"
+								>
+									Sign up
+								</Link>
+							</p>
+						</>
+					)}
 				</div>
 			</div>
 		</div>

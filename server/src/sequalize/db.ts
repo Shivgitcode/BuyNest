@@ -4,12 +4,7 @@ import env from "../utils/env";
 
 export const sequelize = new Sequelize(env.DB_URL as string, {
 	dialect: "postgres",
-	dialectOptions: {
-		ssl: {
-			require: true,
-			rejectUnauthorized: false,
-		},
-	},
+	logging: false,
 });
 
 export async function dbConnect() {
@@ -22,5 +17,4 @@ export async function dbConnect() {
 		return false;
 	}
 }
-
 dbConnect();

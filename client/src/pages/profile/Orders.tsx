@@ -27,6 +27,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 // Mock data for orders
 
@@ -48,6 +49,7 @@ const Orders = () => {
 			order.createdAt.toLowerCase().includes(searchQuery.toLowerCase());
 		return matchesStatus && matchesSearch;
 	});
+	const navigate = useNavigate();
 
 	return (
 		<div>
@@ -134,7 +136,13 @@ const Orders = () => {
 												${order.order_amount.toFixed(2)}
 											</TableCell>
 											<TableCell className="text-right">
-												<Button variant="outline" size="sm">
+												<Button
+													variant="outline"
+													size="sm"
+													onClick={() =>
+														navigate(`/profile/orders/${order.order_id}`)
+													}
+												>
 													View Details
 												</Button>
 											</TableCell>

@@ -2,7 +2,11 @@ import { Cashfree } from "cashfree-pg";
 import type { NextFunction, Request, Response } from "express";
 import { generateId } from "../utils/utils";
 import "../utils/config";
-import { Order } from "../models";
+import { Op } from "sequelize";
+import { Order, OrderItems } from "../models";
+import CartItem from "../models/cart.model";
+import Product from "../models/product.model";
+import { sequelize } from "../sequalize/db";
 
 Cashfree.XClientId = process.env.CASHFREE_APP_ID;
 Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
@@ -12,9 +16,10 @@ export const createOrder = async (
 	res: Response,
 	next: NextFunction,
 ) => {
+	const transaction = await sequelize.transaction();
+
 	try {
 		const { orderAmount, totalItems, phoneNumber } = req.body;
-
 		const user = req.user;
 		const orderId = generateId();
 		const request = {
@@ -29,17 +34,42 @@ export const createOrder = async (
 			},
 		};
 		const response = await Cashfree.PGCreateOrder("2025-01-01", request);
-		const createOrder = await Order.create({
-			userId: user?.id,
-			orderId: orderId,
-			totalItems,
+		const createOrder = await Order.create(
+			{
+				userId: user?.id,
+				orderId: orderId,
+				totalItems,
+			},
+			{ transaction },
+		);
+		const getCartItems = await CartItem.findAll({
+			where: {
+				userId: user?.id,
+			},
+			include: Product,
+			transaction,
 		});
+
+		const orderItems = await Promise.all(
+			getCartItems.map(async (el) => {
+				const createOrderItems = await OrderItems.create({
+					quantity: el.toJSON().quantity,
+					unitprice: el.toJSON().Product.price,
+					name: el.toJSON().Product.product,
+					customerId: user?.id,
+					orderId,
+				});
+				return createOrderItems;
+			}),
+		);
+		await transaction.commit();
 
 		res.status(200).json({
 			message: "payment initiated",
 			data: response.data,
 		});
 	} catch (error) {
+		await transaction.rollback();
 		if (error instanceof Error) next(error);
 	}
 };
@@ -91,5 +121,32 @@ export const allOrders = async (
 		});
 	} catch (error) {
 		if (error instanceof Error) next(Error);
+	}
+};
+
+export const getOrderItems = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const user = req.user;
+		const { orderId } = req.params;
+		const getOrder = await Cashfree.PGFetchOrder("2025-01-01", orderId);
+		const getAllItems = await OrderItems.findAll({
+			where: {
+				[Op.and]: [{ orderId }, { customerId: user?.id }],
+			},
+		});
+		const oneOrderSum = {
+			...getOrder.data,
+			allItems: getAllItems,
+		};
+		res.status(200).json({
+			message: "data of one order",
+			data: oneOrderSum,
+		});
+	} catch (err) {
+		if (err instanceof Error) next(err);
 	}
 };

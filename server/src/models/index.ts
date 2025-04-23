@@ -1,3 +1,4 @@
 import Order from "./order.model";
-
-export { Order };
+import OrderItems from "./orderitems.model";
+import OTP from "./otp.model";
+export { Order, OTP, OrderItems };

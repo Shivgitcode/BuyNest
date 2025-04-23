@@ -99,11 +99,63 @@ export type ProductFormProps = {
 
 export type OrderProps = {
 	message: string;
-	data: {
-		order_id: string;
-		totalItems: string;
-		order_amount: number;
-		order_status: string;
-		createdAt: string;
-	}[];
+	data: Order[];
+};
+
+export type OrderItemProp = {
+	id: string;
+	quantity: number;
+	unitprice: number;
+	name: string;
+	invoiceno: string;
+};
+
+export type OrderItemProps = {
+	message: string;
+	data: Order & {
+		allItems: OrderItemProp[];
+	};
+};
+
+export type Order = {
+	cf_order_id: string;
+	created_at: Date;
+	customer_details: CustomerDetails;
+	entity: string;
+	order_amount: number;
+	payment_session_id: string;
+	order_currency: string;
+	order_expiry_time: Date;
+	order_id: string;
+	order_meta: OrderMeta;
+	totalItems: number;
+	order_note: string;
+	order_status: string;
+	order_tags: OrderTags;
+	terminal_data: null;
+	cart_details: CartDetails;
+	createdAt: string;
+};
+
+export type CartDetails = {
+	cart_id: string;
+};
+
+export type CustomerDetails = {
+	customer_id: string;
+	customer_name: string;
+	customer_email: string;
+	customer_phone: string;
+	customer_uid: string;
+};
+
+export type OrderMeta = {
+	return_url: string;
+	payment_methods: string;
+	notify_url: string;
+};
+
+export type OrderTags = {
+	name: string;
+	age: string;
 };

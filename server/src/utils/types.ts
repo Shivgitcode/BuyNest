@@ -99,6 +99,8 @@ export const ProcessEnvSchema = z.object({
 	TWILIO_ACCOUNT_ID: z.string(),
 	TWILIO_AUTH_TOKEN: z.string(),
 	TWILIO_PHONE_NUMBER: z.string(),
+	NODEMAILER_USER: z.string(),
+	NODEMAILER_PASSWORD: z.string(),
 });
 
 export const TwilioSchema = z.object({
