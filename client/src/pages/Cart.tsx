@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
 import useFetchCart from "@/hooks/use-fetchCart";
 import initializeSDK from "@/utils/cashfreeinitialize";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ShoppingBag } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -20,11 +20,13 @@ const Cart = () => {
 	const { cart } = useFetchCart();
 	const navigate = useNavigate();
 	const { user } = useAuth();
+	const queryclient = useQueryClient();
 
 	const { mutateAsync: verifyingPayment } = useMutation({
 		mutationFn: verifyPayment,
 		onSuccess: () => {
 			navigate("/payment/success");
+			queryclient.invalidateQueries({ queryKey: "cart" });
 		},
 		onError: () => {
 			navigate("/payment/failed");

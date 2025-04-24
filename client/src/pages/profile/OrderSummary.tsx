@@ -107,9 +107,7 @@ const OrderSummary = () => {
 						</div>
 						<div>
 							<span className="font-medium text-gray-700">Invoice No:</span>
-							<span className="ml-2">
-								{oneOrder.data.customer_details.customer_email}
-							</span>
+							<span className="ml-2">{oneOrder.data.invoiceNo}</span>
 						</div>
 						<div>
 							<span className="font-medium text-gray-700">Shipping To:</span>
@@ -125,7 +123,7 @@ const OrderSummary = () => {
 						</div>
 						<div className="col-span-2">
 							<span className="font-medium text-gray-700">Address:</span>
-							{/* <span className="ml-2">{order.shipping.address}</span> */}
+							<span className="ml-2">{oneOrder.data.order_tags.address}</span>
 						</div>
 					</div>
 					<div className="border-b mb-4" />
@@ -180,13 +178,14 @@ const OrderSummary = () => {
 										.toFixed(2)}
 								</span>
 							</div>
-							<div className="flex justify-between gap-8 text-sm mb-1">
-								<span>Shipping:</span>
-								<span>$0.00</span>
-							</div>
 							<div className="flex justify-between gap-8 text-base mt-2 font-bold">
 								<span>Grand Total:</span>
-								{/* <span>${order.total.toFixed(2)}</span> */}
+								<span>
+									$
+									{oneOrder.data.allItems
+										.reduce((sum, x) => sum + x.unitprice * x.quantity, 0)
+										.toFixed(2)}
+								</span>
 							</div>
 						</div>
 					</div>

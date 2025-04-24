@@ -3,6 +3,7 @@ import type { NextFunction, Request, Response } from "express";
 import { generateId } from "../utils/utils";
 import "../utils/config";
 import { Op } from "sequelize";
+import ErrorHandler from "../ErrorHandler/error";
 import { Order, OrderItems } from "../models";
 import CartItem from "../models/cart.model";
 import Product from "../models/product.model";
@@ -81,11 +82,20 @@ export const verifyPayment = async (
 ) => {
 	try {
 		const { orderId } = req.body;
+		const user = req.user;
 		const paymentVerification = await Cashfree.PGOrderFetchPayments(
 			"2025-01-01",
 			orderId,
 		);
 		console.log(paymentVerification);
+		if (!paymentVerification) {
+			next(new ErrorHandler("payment is not verified", 400));
+		}
+		await CartItem.destroy({
+			where: {
+				userId: user?.id as string,
+			},
+		});
 		res.status(200).json({
 			message: "payment successfull",
 		});
@@ -140,6 +150,7 @@ export const getOrderItems = async (
 		});
 		const oneOrderSum = {
 			...getOrder.data,
+			invoiceNo: `INV-${getOrder.data.cf_order_id}`,
 			allItems: getAllItems,
 		};
 		res.status(200).json({

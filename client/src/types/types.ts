@@ -107,12 +107,12 @@ export type OrderItemProp = {
 	quantity: number;
 	unitprice: number;
 	name: string;
-	invoiceno: string;
 };
 
 export type OrderItemProps = {
 	message: string;
 	data: Order & {
+		invoiceNo: string;
 		allItems: OrderItemProp[];
 	};
 };
@@ -158,4 +158,5 @@ export type OrderMeta = {
 export type OrderTags = {
 	name: string;
 	age: string;
+	address: string;
 };
