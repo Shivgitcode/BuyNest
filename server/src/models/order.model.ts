@@ -16,9 +16,6 @@ const Order = sequelize.define("Orders", {
 	orderId: {
 		type: DataTypes.TEXT,
 	},
-	address: {
-		type: DataTypes.STRING,
-	},
 });
 
 export default Order;

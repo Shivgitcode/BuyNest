@@ -15,8 +15,6 @@ import {
 
 import Spinner from "@/components/Spinner";
 import useFetchProducts from "@/hooks/useFetchProducts";
-import { productsData } from "@/utils/data";
-// Sample electronics products data
 
 const Shop = () => {
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -31,7 +29,7 @@ const Shop = () => {
 		indexOfFirstProduct,
 		indexOfLastProduct,
 	);
-	const totalPages = Math.ceil(productsData.length / productsPerPage);
+	const totalPages = Math.ceil((productData?.length || 0) / productsPerPage);
 
 	const handlePageChange = (pageNumber: number) => {
 		setCurrentPage(pageNumber);
@@ -66,8 +64,8 @@ const Shop = () => {
 							<div className="bg-white p-4 mb-6 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 								<div className="text-sm text-gray-600">
 									Showing {indexOfFirstProduct + 1}-
-									{Math.min(indexOfLastProduct, productsData.length)} of{" "}
-									{productsData.length} products
+									{Math.min(indexOfLastProduct, productData?.length || 0)} of{" "}
+									{productData?.length || 0} products
 								</div>
 								<div className="flex items-center gap-2">
 									<span className="text-sm">Sort by:</span>

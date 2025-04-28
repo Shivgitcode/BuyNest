@@ -134,6 +134,7 @@ export type Order = {
 	order_tags: OrderTags;
 	terminal_data: null;
 	cart_details: CartDetails;
+	address: string;
 	createdAt: string;
 };
 

@@ -35,6 +35,9 @@ importers:
       '@types/nodemailer':
         specifier: ^6.4.17
         version: 6.4.17
+      '@types/nodemailer-express-handlebars':
+        specifier: ^4.0.5
+        version: 4.0.5
       bcrypt:
         specifier: ^5.1.1
         version: 5.1.1
@@ -522,6 +525,9 @@ packages:
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
 
+  '@types/express-handlebars@5.3.1':
+    resolution: {integrity: sha512-DSzaERLO4gHb8AqnrL58jzSDyT0yDdl6HqDc+bGz1Hf0nrG1FK30nHGzv8NBEGR8QV9eUGB/YaE0Qj3NjF7siw==}
+
   '@types/express-serve-static-core@5.0.6':
     resolution: {integrity: sha512-3xhRnjJPkULekpSzgtoNYYcTWgEZkp4myc+Saevii5JPnHNvHMRlBSHDbs7Bh1iPPoVTERHEZXyhyLbMEsExsA==}
 
@@ -548,6 +554,9 @@ packages:
 
   '@types/node@22.14.1':
     resolution: {integrity: sha512-u0HuPQwe/dHrItgHHpmw3N2fYCR6x4ivMNbPHRkBVP4CvN+kiRrKHWk3i8tXiO/joPwXLMYvF9TTF0eqgHIuOw==}
+
+  '@types/nodemailer-express-handlebars@4.0.5':
+    resolution: {integrity: sha512-SuSYGNQPGtgMkDlQTO7zacXDENqQR3QXW1Ip5PvvookodvUKCbNVRF1tisY3Bgew1h8Wjfsf6dPQ5E45pJ1bJA==}
 
   '@types/nodemailer@6.4.17':
     resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
@@ -2360,6 +2369,8 @@ snapshots:
     dependencies:
       '@types/ms': 2.1.0
 
+  '@types/express-handlebars@5.3.1': {}
+
   '@types/express-serve-static-core@5.0.6':
     dependencies:
       '@types/node': 22.14.1
@@ -2395,6 +2406,11 @@ snapshots:
   '@types/node@22.14.1':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/nodemailer-express-handlebars@4.0.5':
+    dependencies:
+      '@types/express-handlebars': 5.3.1
+      '@types/nodemailer': 6.4.17
 
   '@types/nodemailer@6.4.17':
     dependencies:

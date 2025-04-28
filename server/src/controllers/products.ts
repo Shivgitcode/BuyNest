@@ -1,10 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
-import { Op, QueryTypes } from "sequelize";
+import { Op } from "sequelize";
 
 import { logger } from "../logger/devLogger";
 import Category from "../models/categories.model";
 import Product from "../models/product.model";
-import { sequelize } from "../sequalize/db";
 import { category } from "../utils/data";
 
 export const getProducts = async (
@@ -168,18 +167,24 @@ export const getProductsByPrice = async (
 	next: NextFunction,
 ) => {
 	try {
-		const query = req.query.range;
-		const range = JSON.parse(query as string);
-		const findByRange = await sequelize.query(
-			`SELECT * FROM "Products" where price BETWEEN :range1 and :range2`,
-			{
-				replacements: {
-					range1: Number.parseInt(range[0]),
-					range2: Number.parseInt(range[1]),
+		const { range } = req.body;
+		const findByRange = await Product.findAll({
+			where: {
+				price: {
+					[Op.between]: [range[0], range[1]],
 				},
-				type: QueryTypes.SELECT,
 			},
-		);
+			include: {
+				model: Category,
+				attributes: {
+					exclude: ["createdAt", "updatedAt"],
+				},
+			},
+			attributes: {
+				exclude: ["createdAt", "updatedAt"],
+			},
+		});
+
 		res.status(200).json({
 			message: "product by price",
 			data: findByRange,

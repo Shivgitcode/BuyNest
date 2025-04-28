@@ -8,6 +8,8 @@ import { Order, OrderItems } from "../models";
 import CartItem from "../models/cart.model";
 import Product from "../models/product.model";
 import { sequelize } from "../sequalize/db";
+import { transportMail } from "../utils/nodemailer";
+import { orderTemplate } from "../utils/template";
 
 Cashfree.XClientId = process.env.CASHFREE_APP_ID;
 Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
@@ -87,6 +89,7 @@ export const verifyPayment = async (
 			"2025-01-01",
 			orderId,
 		);
+		const currentOrder = await Cashfree.PGFetchOrder("2025-01-01", orderId);
 		console.log(paymentVerification);
 		if (!paymentVerification) {
 			next(new ErrorHandler("payment is not verified", 400));
@@ -95,6 +98,19 @@ export const verifyPayment = async (
 			where: {
 				userId: user?.id as string,
 			},
+		});
+		await transportMail.sendMail({
+			from: "toji082004@gmail.com",
+			to: user?.email as string,
+			subject: "Order Successfull",
+			html: orderTemplate(
+				orderId,
+				currentOrder.data.customer_details?.customer_name as string,
+				new Date().toLocaleDateString(),
+				"same",
+				currentOrder.data.order_amount as number,
+				"BuyNest",
+			),
 		});
 		res.status(200).json({
 			message: "payment successfull",
@@ -152,6 +168,7 @@ export const getOrderItems = async (
 			...getOrder.data,
 			invoiceNo: `INV-${getOrder.data.cf_order_id}`,
 			allItems: getAllItems,
+			address: user?.address,
 		};
 		res.status(200).json({
 			message: "data of one order",

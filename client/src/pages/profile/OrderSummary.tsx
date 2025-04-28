@@ -88,9 +88,9 @@ const OrderSummary = () => {
 				</CardHeader>
 				<CardContent>
 					<div className="mb-6 grid grid-cols-2 gap-4 text-sm">
-						<div>
+						{/* <div>
 							<span className="font-medium text-gray-700">Order Status:</span>
-							{/* <span
+							<span
 								className={`ml-2 px-2 py-1 rounded-md text-xs font-medium
                 ${
 									order.status === "Delivered"
@@ -103,8 +103,8 @@ const OrderSummary = () => {
 								}`}
 							>
 								{order.status}
-							</span> */}
-						</div>
+							</span>
+						</div> */}
 						<div>
 							<span className="font-medium text-gray-700">Invoice No:</span>
 							<span className="ml-2">{oneOrder.data.invoiceNo}</span>
@@ -123,7 +123,7 @@ const OrderSummary = () => {
 						</div>
 						<div className="col-span-2">
 							<span className="font-medium text-gray-700">Address:</span>
-							<span className="ml-2">{oneOrder.data.order_tags.address}</span>
+							<span className="ml-2">{oneOrder.data.address}</span>
 						</div>
 					</div>
 					<div className="border-b mb-4" />

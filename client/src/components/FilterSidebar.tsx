@@ -1,3 +1,4 @@
+import { getProductsByPrice } from "@/actions/getProductsByPriceRange";
 import {
 	Accordion,
 	AccordionContent,
@@ -10,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import useFetchCategory from "@/hooks/useFetchCategory";
 import { useFilter } from "@/store/filter-store";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import CategorySkeleton from "./CategorySkeleton";
 import Spinner from "./Spinner";
 
@@ -21,6 +23,7 @@ interface FilterSidebarProps {
 const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 	const { isFetching, isLoading, categories } = useFetchCategory();
 	const queryClient = useQueryClient();
+	const [priceRange, setPriceRange] = useState<[number, number]>([20, 500]);
 
 	const { filterCategories, setFilterCategories, setNullFilter } = useFilter(
 		(state) => state,
@@ -28,14 +31,36 @@ const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 
 	const handleFilter = (category: string) => {
 		setFilterCategories(category);
-
 		queryClient.invalidateQueries({
-			queryKey: ["product", [...filterCategories]],
+			queryKey: ["products", [...filterCategories]],
 		});
 	};
 
+	const { mutateAsync: priceFilter } = useMutation({
+		mutationFn: getProductsByPrice,
+		onSuccess: (data) => {
+			console.log(data, "something is wrong");
+			queryClient.setQueryData(["products", "all"], data);
+		},
+	});
+
 	const handlePriceFilter = (value: [number, number]) => {
-		console.log(value);
+		setPriceRange(value);
+		priceFilter(value);
+	};
+
+	const handleMinInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const min = Number.parseInt(e.target.value);
+		if (!Number.isNaN(min) && min >= 20 && min <= priceRange[1]) {
+			handlePriceFilter([min, priceRange[1]]);
+		}
+	};
+
+	const handleMaxInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const max = Number.parseInt(e.target.value);
+		if (!Number.isNaN(max) && max <= 500 && max >= priceRange[0]) {
+			handlePriceFilter([priceRange[0], max]);
+		}
 	};
 
 	return isLoading ? (
@@ -46,11 +71,7 @@ const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 		>
 			<div className="flex justify-between items-center mb-4">
 				<h3 className="font-medium text-lg">Filters</h3>
-				<Button
-					variant="ghost"
-					size="sm"
-					onClick={() => setNullFilter()} // Clear all selected categories
-				>
+				<Button variant="ghost" size="sm" onClick={() => setNullFilter()}>
 					Clear all
 				</Button>
 			</div>
@@ -64,14 +85,16 @@ const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 					<AccordionContent>
 						<div className="py-2">
 							<Slider
-								defaultValue={[20, 80]}
+								defaultValue={priceRange}
 								max={500}
+								min={20}
 								step={1}
+								value={priceRange}
 								onValueChange={handlePriceFilter}
 							/>
 							<div className="flex justify-between mt-2 text-sm text-muted-foreground">
-								<span>$0</span>
-								<span>$500</span>
+								<span>${priceRange[0]}</span>
+								<span>${priceRange[1]}</span>
 							</div>
 							<div className="flex justify-between items-center gap-4 mt-4">
 								<div className="flex-1 flex gap-2 items-center">
@@ -81,7 +104,8 @@ const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 									<input
 										id="min"
 										type="number"
-										placeholder="0"
+										value={priceRange[0]}
+										onChange={handleMinInputChange}
 										className="w-full p-2 text-sm border rounded"
 									/>
 								</div>
@@ -92,7 +116,8 @@ const FilterSidebar = ({ isOpen = true }: FilterSidebarProps) => {
 									<input
 										id="max"
 										type="number"
-										placeholder="500"
+										value={priceRange[1]}
+										onChange={handleMaxInputChange}
 										className="w-full p-2 text-sm border rounded"
 									/>
 								</div>

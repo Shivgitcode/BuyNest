@@ -6,6 +6,7 @@ import { OTP } from "../models";
 import User from "../models/user.model";
 import generateOtp from "../utils/generateOtp";
 import { transportMail } from "../utils/nodemailer";
+import { otpTemplate } from "../utils/template";
 import { signedToken } from "../utils/tokenGenerator";
 import { LoginSchema, type SignUp, SignupSchema } from "../utils/types";
 export const signup = async (
@@ -16,6 +17,7 @@ export const signup = async (
 	try {
 		logger.debug(JSON.stringify(req.body));
 		const parseResult = SignupSchema.safeParse(req.body);
+		logger.debug(parseResult.success);
 		if (!parseResult.success) {
 			const validationErrors = parseResult.error.errors.map(
 				(err) => err.message,
@@ -38,7 +40,7 @@ export const signup = async (
 			data: newUser.toJSON(),
 		});
 	} catch (error) {
-		if (error instanceof Error) next(error.message);
+		if (error instanceof Error) next(error);
 	}
 };
 
@@ -81,11 +83,12 @@ export const login = async (
 			},
 		});
 		const { otp, expiresAt } = generateOtp();
+		const otpLiteral = otpTemplate(user?.toJSON().username, otp, "BuyNest");
 		await transportMail.sendMail({
 			from: "toji082004@gmail.com",
 			to: user?.toJSON().email,
 			subject: "Otp for login Verification",
-			html: `<h1>Your otp is ${otp} expires in 5 min</h1>`,
+			html: otpLiteral,
 		});
 		const creatingOtp = await OTP.create({
 			otp,
