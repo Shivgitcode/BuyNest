@@ -35,6 +35,7 @@ const ProductCard = ({
 	const handleAddToCart = (e: React.MouseEvent, id: string) => {
 		e.preventDefault();
 		e.stopPropagation();
+		console.log(isAuthenticated);
 		if (!isAuthenticated) {
 			navigate("/auth/login");
 		}
