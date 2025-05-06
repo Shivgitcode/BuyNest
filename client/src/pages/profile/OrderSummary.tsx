@@ -11,28 +11,28 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ReceiptText } from "lucide-react";
 import { Link, useParams } from "react-router";
 
-// In a real app, fetch order data via API or context
-// For now, we mimic with static/mock data
-const mockOrders = [
-	{
-		id: "12345",
-		date: "June 15, 2023",
-		status: "Delivered",
-		total: 149.99,
-		items: [
-			{ name: "Classic T-Shirt", qty: 1, price: 59.99 },
-			{ name: "Slim Jeans", qty: 1, price: 74.99 },
-			{ name: "Sneakers", qty: 1, price: 15.0 },
-		],
-		shipping: {
-			name: "John Doe",
-			address: "123 Main St, Springfield, USA",
-			email: "john.doe@example.com",
-		},
-		invoiceNo: "INV-0012345",
-	},
-	// ... add more mock orders as needed
-];
+// // In a real app, fetch order data via API or context
+// // For now, we mimic with static/mock data
+// const mockOrders = [
+// 	{
+// 		id: "12345",
+// 		date: "June 15, 2023",
+// 		status: "Delivered",
+// 		total: 149.99,
+// 		items: [
+// 			{ name: "Classic T-Shirt", qty: 1, price: 59.99 },
+// 			{ name: "Slim Jeans", qty: 1, price: 74.99 },
+// 			{ name: "Sneakers", qty: 1, price: 15.0 },
+// 		],
+// 		shipping: {
+// 			name: "John Doe",
+// 			address: "123 Main St, Springfield, USA",
+// 			email: "john.doe@example.com",
+// 		},
+// 		invoiceNo: "INV-0012345",
+// 	},
+// 	// ... add more mock orders as needed
+// ];
 
 const OrderSummary = () => {
 	const { orderId } = useParams<{ orderId: string }>();
