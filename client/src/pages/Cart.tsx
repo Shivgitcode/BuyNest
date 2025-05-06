@@ -33,8 +33,6 @@ const Cart = () => {
 		},
 	});
 
-	console.log("inside cart hello", cart);
-
 	const { mutateAsync: checkingOut } = useMutation({
 		mutationFn: makePayment,
 		onMutate: () => {
