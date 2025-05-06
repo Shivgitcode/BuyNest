@@ -26,7 +26,7 @@ const Cart = () => {
 		mutationFn: verifyPayment,
 		onSuccess: () => {
 			navigate("/payment/success");
-			queryclient.invalidateQueries({ queryKey: "cart" });
+			queryclient.invalidateQueries({ queryKey: ["cart"] });
 		},
 		onError: () => {
 			navigate("/payment/failed");
