@@ -11,7 +11,7 @@ export const signedToken = async (data: SignUp, res: Response) => {
 	res.cookie("jwt", token, {
 		maxAge: 60 * 60 * 1000,
 		httpOnly: true,
-		sameSite: "lax",
+		sameSite: "none",
 		secure: true,
 	});
 	return token;
