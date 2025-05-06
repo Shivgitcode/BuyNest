@@ -37,12 +37,7 @@ const mockOrders = [
 const OrderSummary = () => {
 	const { orderId } = useParams<{ orderId: string }>();
 	console.log(orderId);
-	const order = mockOrders.find((o) => o.id === orderId);
-	const {
-		data: oneOrder,
-		isFetching,
-		isPending,
-	} = useQuery({
+	const { data: oneOrder } = useQuery({
 		queryKey: ["orderItems", "orderId"],
 		queryFn: () => getAllOrderItems(orderId as string),
 		enabled: typeof orderId === "string",
