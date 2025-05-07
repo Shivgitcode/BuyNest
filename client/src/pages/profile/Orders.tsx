@@ -1,4 +1,3 @@
-import { allOrders } from "@/actions/getAllOrders";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -24,7 +23,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
+import useOrder from "@/hooks/use-order";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -34,16 +33,13 @@ import { useNavigate } from "react-router";
 const Orders = () => {
 	const [statusFilter, setStatusFilter] = useState("all");
 	const [searchQuery, setSearchQuery] = useState("");
-	const { data: orders, isPending } = useQuery({
-		queryKey: ["orders"],
-		queryFn: allOrders,
-	});
+	const { orders, isPending } = useOrder();
 
 	// Filter orders based on status and search query
 	const filteredOrders = orders?.data?.filter((order) => {
 		const matchesStatus =
 			statusFilter === "all" ||
-			order.order_status.toLowerCase() === statusFilter.toLowerCase();
+			order.orderStatus.toLowerCase() === statusFilter.toLowerCase();
 		const matchesSearch =
 			order.order_id.includes(searchQuery) ||
 			order.createdAt.toLowerCase().includes(searchQuery.toLowerCase());
@@ -119,16 +115,16 @@ const Orders = () => {
 												<span
 													className={`inline-block px-2 py-1 rounded-md text-xs font-medium
                           ${
-														order.order_status === "PAID"
+														order.orderStatus === "Delivered"
 															? "bg-green-100 text-green-800"
-															: order.order_status === "Processing"
+															: order.orderStatus === "Processing"
 																? "bg-blue-100 text-blue-800"
-																: order.order_status === "Shipped"
+																: order.orderStatus === "Shipped"
 																	? "bg-purple-100 text-purple-800"
 																	: "bg-red-100 text-red-800"
 													}`}
 												>
-													{order.order_status}
+													{order.orderStatus}
 												</span>
 											</TableCell>
 											<TableCell>{order.totalItems} items</TableCell>

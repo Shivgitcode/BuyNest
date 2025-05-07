@@ -13,6 +13,10 @@ const Order = sequelize.define("Orders", {
 	totalItems: {
 		type: DataTypes.INTEGER,
 	},
+	orderStatus: {
+		type: DataTypes.ENUM("processing", "shipped", "delivered", "cancelled"),
+		defaultValue: "processing",
+	},
 	orderId: {
 		type: DataTypes.TEXT,
 	},

@@ -178,3 +178,25 @@ export const getOrderItems = async (
 		if (err instanceof Error) next(err);
 	}
 };
+
+export const getAllOrders = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const getAllOrders = await Order.findAll();
+		const newAllOrders = getAllOrders.map(async (el) => {
+			const order = el.toJSON();
+			const response = await Cashfree.PGFetchOrder("2025-01-01", order.orderId);
+			return { ...response.data, ...order };
+		});
+		const myOrders = await Promise.all(newAllOrders);
+		res.status(200).json({
+			message: "all orders",
+			data: myOrders,
+		});
+	} catch (error) {
+		if (error instanceof Error) next(error);
+	}
+};

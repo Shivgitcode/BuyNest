@@ -130,11 +130,12 @@ export type Order = {
 	order_meta: OrderMeta;
 	totalItems: number;
 	order_note: string;
-	order_status: string;
+	orderStatus: string;
 	order_tags: OrderTags;
 	terminal_data: null;
 	cart_details: CartDetails;
 	address: string;
+
 	createdAt: string;
 };
 

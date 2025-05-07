@@ -22,6 +22,7 @@ export const addProduct = async (
 			const validationError = parseBody.error.errors.map((err) => {
 				return err.message;
 			});
+			console.log(validationError);
 			return next(new ErrorHandler(`${validationError.join(", ")}`, 400));
 		}
 		if (!imgFile && !parseBody.data.image) {

@@ -1,3 +1,4 @@
+import { getAllAdminOrders } from "@/actions/getAllAdminOrders";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { sampleOrders } from "@/utils/data";
+import { useQuery } from "@tanstack/react-query";
 import {
 	CheckCircle2,
 	ChevronLeft,
@@ -29,9 +30,10 @@ import {
 	Search,
 	Truck,
 } from "lucide-react";
+import { Eye } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router";
 
-// Status badge configuration
 const statusConfig = {
 	pending: { color: "bg-yellow-100 text-yellow-800", icon: Clock },
 	processing: { color: "bg-blue-100 text-blue-800", icon: Package },
@@ -43,19 +45,25 @@ const statusConfig = {
 const AdminOrders = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [statusFilter, setStatusFilter] = useState("all");
+	const { data: orders } = useQuery({
+		queryKey: ["orders"],
+		queryFn: getAllAdminOrders,
+	});
 
-	// Filter orders based on search term and status
-	const filteredOrders = sampleOrders.filter((order) => {
+	const filteredOrders = orders?.data.filter((order) => {
 		const matchesSearch =
-			order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			order.email.toLowerCase().includes(searchTerm.toLowerCase());
+			order.order_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			order.customer_details.customer_name
+				.toLowerCase()
+				.includes(searchTerm.toLowerCase()) ||
+			order.customer_details.customer_email
+				.toLowerCase()
+				.includes(searchTerm.toLowerCase());
 		const matchesStatus =
-			statusFilter === "all" || order.status === statusFilter;
+			statusFilter === "all" || order.orderStatus === statusFilter;
 		return matchesSearch && matchesStatus;
 	});
 
-	// Function to render status badge
 	const renderStatusBadge = (status: string) => {
 		const config = statusConfig[status as keyof typeof statusConfig];
 		const StatusIcon = config.icon;
@@ -112,37 +120,48 @@ const AdminOrders = () => {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{filteredOrders.map((order) => (
-							<TableRow key={order.id}>
-								<TableCell className="font-medium">{order.id}</TableCell>
+						{filteredOrders?.map((order) => (
+							<TableRow key={order.order_id}>
+								<TableCell className="font-medium">{order.order_id}</TableCell>
 								<TableCell>
 									<div>
-										<div>{order.customer}</div>
-										<div className="text-sm text-gray-500">{order.email}</div>
+										<div>{order.customer_details.customer_name}</div>
+										<div className="text-sm text-gray-500">
+											{order.customer_details.customer_email}
+										</div>
 									</div>
 								</TableCell>
 								<TableCell>
-									{new Date(order.date).toLocaleDateString()} at{" "}
-									{new Date(order.date).toLocaleTimeString([], {
+									{new Date(order.createdAt).toLocaleDateString()} at{" "}
+									{new Date(order.createdAt).toLocaleTimeString([], {
 										hour: "2-digit",
 										minute: "2-digit",
 									})}
 								</TableCell>
 								<TableCell>
 									<Badge
-										className={`${statusConfig[order.status as keyof typeof statusConfig].color} border-0`}
+										className={`${statusConfig[order.orderStatus as keyof typeof statusConfig].color} border-0`}
 									>
-										{renderStatusBadge(order.status)}
+										{renderStatusBadge(order.orderStatus)}
 									</Badge>
 								</TableCell>
-								<TableCell>{order.items}</TableCell>
+								<TableCell>{order.totalItems}</TableCell>
 								<TableCell className="text-right">
-									${order.total.toFixed(2)}
+									${order.order_amount.toFixed(2)}
 								</TableCell>
 								<TableCell className="text-right">
-									<Button variant="ghost" size="icon">
-										<FileText className="h-4 w-4" />
-									</Button>
+									<div className="flex justify-end space-x-1">
+										<Button variant="ghost" size="icon" asChild>
+											<Link to={`/admin/orders/${order.order_id}`}>
+												<Eye className="h-4 w-4" />
+												<span className="sr-only">View Order</span>
+											</Link>
+										</Button>
+										<Button variant="ghost" size="icon">
+											<FileText className="h-4 w-4" />
+											<span className="sr-only">Order Details</span>
+										</Button>
+									</div>
 								</TableCell>
 							</TableRow>
 						))}
@@ -152,7 +171,7 @@ const AdminOrders = () => {
 
 			<div className="flex items-center justify-between mt-4">
 				<div className="text-sm text-gray-500">
-					Showing {filteredOrders.length} of {sampleOrders.length} orders
+					Showing {filteredOrders?.length} of {orders?.data.length} orders
 				</div>
 				<div className="flex items-center space-x-2">
 					<Button variant="outline" size="icon">
