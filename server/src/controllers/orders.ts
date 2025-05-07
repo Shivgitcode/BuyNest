@@ -2,7 +2,6 @@ import { Cashfree } from "cashfree-pg";
 import type { NextFunction, Request, Response } from "express";
 import { generateId } from "../utils/utils";
 import "../utils/config";
-import { Op } from "sequelize";
 import ErrorHandler from "../ErrorHandler/error";
 import { Order, OrderItems } from "../models";
 import CartItem from "../models/cart.model";
@@ -161,7 +160,7 @@ export const getOrderItems = async (
 		const getOrder = await Cashfree.PGFetchOrder("2025-01-01", orderId);
 		const getAllItems = await OrderItems.findAll({
 			where: {
-				[Op.and]: [{ orderId }, { customerId: user?.id }],
+				orderId,
 			},
 		});
 		const oneOrderSum = {

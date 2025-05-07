@@ -1,3 +1,4 @@
+import { getAllOrderItems } from "@/actions/getAllOrderItems";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,10 +26,10 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { useQuery } from "@tanstack/react-query";
 import {
 	ArrowLeft,
 	CheckCircle2,
-	Clock,
 	Package,
 	PackageX,
 	Truck,
@@ -36,13 +37,12 @@ import {
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-// Status badge configuration (same as in Orders.tsx)
+// Update the statusConfig to match the actual status values
 const statusConfig = {
-	pending: { color: "bg-yellow-100 text-yellow-800", icon: Clock },
-	processing: { color: "bg-blue-100 text-blue-800", icon: Package },
-	shipped: { color: "bg-purple-100 text-purple-800", icon: Truck },
-	completed: { color: "bg-green-100 text-green-800", icon: CheckCircle2 },
-	cancelled: { color: "bg-red-100 text-red-800", icon: PackageX },
+	Processing: { color: "bg-blue-100 text-blue-800", icon: Package },
+	Shipped: { color: "bg-purple-100 text-purple-800", icon: Truck },
+	Delivered: { color: "bg-green-100 text-green-800", icon: CheckCircle2 },
+	Cancelled: { color: "bg-red-100 text-red-800", icon: PackageX },
 };
 
 // Mock data for a single order - in a real app, this would be fetched from API
@@ -83,14 +83,22 @@ const mockOrder = {
 const OrderDetail = () => {
 	const { orderId } = useParams();
 	const navigate = useNavigate();
-	const [orderStatus, setOrderStatus] = useState(mockOrder.status);
+	const [orderStatus, setOrderStatus] = useState("Processing");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	// Function to render status badge
+	// Fix the query key to use the actual orderId
+	const { data: order } = useQuery({
+		queryKey: ["orderAdminItems", orderId],
+		queryFn: () => getAllOrderItems(orderId as string),
+		enabled: typeof orderId === "string",
+	});
+
+	// Update the renderStatusBadge function to handle undefined config
 	const renderStatusBadge = (status: string) => {
 		const config = statusConfig[status as keyof typeof statusConfig];
-		const StatusIcon = config.icon;
+		if (!config) return <span className="capitalize">{status}</span>;
 
+		const StatusIcon = config.icon;
 		return (
 			<div className="flex items-center gap-1.5">
 				<StatusIcon className="h-4 w-4" />
@@ -123,7 +131,7 @@ const OrderDetail = () => {
 					<Badge
 						className={`${statusConfig[orderStatus as keyof typeof statusConfig].color} border-0 px-3 py-1.5 text-sm`}
 					>
-						{renderStatusBadge(orderStatus)}
+						{renderStatusBadge(order?.data.orderStatus as string)}
 					</Badge>
 				</div>
 
@@ -133,7 +141,8 @@ const OrderDetail = () => {
 						<CardHeader>
 							<CardTitle>Order Details</CardTitle>
 							<CardDescription>
-								Placed on {new Date(mockOrder.date).toLocaleString()}
+								Placed on{" "}
+								{new Date(order?.data.createdAt as string).toLocaleString()}
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
@@ -150,7 +159,7 @@ const OrderDetail = () => {
 											</TableRow>
 										</TableHeader>
 										<TableBody>
-											{mockOrder.items.map((item) => (
+											{order?.data.allItems.map((item) => (
 												<TableRow key={item.id}>
 													<TableCell className="font-medium">
 														{item.name}
@@ -159,10 +168,10 @@ const OrderDetail = () => {
 														{item.quantity}
 													</TableCell>
 													<TableCell className="text-right">
-														${item.price.toFixed(2)}
+														${item.unitprice.toFixed(2)}
 													</TableCell>
 													<TableCell className="text-right">
-														${item.total.toFixed(2)}
+														${(item.unitprice * item.quantity).toFixed(2)}
 													</TableCell>
 												</TableRow>
 											))}
@@ -171,7 +180,7 @@ const OrderDetail = () => {
 													Order Total:
 												</TableCell>
 												<TableCell className="text-right font-bold">
-													${mockOrder.total.toFixed(2)}
+													${order?.data.order_amount.toFixed(2)}
 												</TableCell>
 											</TableRow>
 										</TableBody>
@@ -199,7 +208,7 @@ const OrderDetail = () => {
 									<div>
 										<h3 className="text-lg font-medium mb-2">Payment Method</h3>
 										<p className="text-sm text-gray-600">
-											{mockOrder.paymentMethod}
+											{order?.data.order_currency}
 										</p>
 									</div>
 								</div>
@@ -215,10 +224,16 @@ const OrderDetail = () => {
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div>
-									<h3 className="font-medium">{mockOrder.customer}</h3>
-									<p className="text-sm text-gray-600">{mockOrder.email}</p>
+									<h3 className="font-medium">
+										{order?.data.customer_details.customer_name}
+									</h3>
+									<p className="text-sm text-gray-600">
+										{order?.data.customer_details.customer_email}
+									</p>
 									{mockOrder.phone && (
-										<p className="text-sm text-gray-600">{mockOrder.phone}</p>
+										<p className="text-sm text-gray-600">
+											{order?.data.customer_details.customer_phone}
+										</p>
 									)}
 								</div>
 
@@ -243,11 +258,10 @@ const OrderDetail = () => {
 												<SelectValue placeholder="Select status" />
 											</SelectTrigger>
 											<SelectContent>
-												<SelectItem value="pending">Pending</SelectItem>
-												<SelectItem value="processing">Processing</SelectItem>
-												<SelectItem value="shipped">Shipped</SelectItem>
-												<SelectItem value="completed">Completed</SelectItem>
-												<SelectItem value="cancelled">Cancelled</SelectItem>
+												<SelectItem value="Processing">Processing</SelectItem>
+												<SelectItem value="Shipped">Shipped</SelectItem>
+												<SelectItem value="Delivered">Delivered</SelectItem>
+												<SelectItem value="Cancelled">Cancelled</SelectItem>
 											</SelectContent>
 										</Select>
 									</div>

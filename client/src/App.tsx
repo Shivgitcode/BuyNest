@@ -15,6 +15,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Shop from "./pages/Shop";
 import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/admin/Dashboard";
+import OrderItems from "./pages/admin/OrderItems";
 import AdminOrders from "./pages/admin/Orders";
 import AdminProductForm from "./pages/admin/ProductForm";
 import AdminProducts from "./pages/admin/Products";
@@ -22,7 +23,6 @@ import OrderSummary from "./pages/profile/OrderSummary";
 import Orders from "./pages/profile/Orders";
 import Profile from "./pages/profile/Profile";
 import Settings from "./pages/profile/Settings";
-
 const queryClient = new QueryClient();
 
 const routes = createBrowserRouter([
@@ -131,6 +131,14 @@ const routes = createBrowserRouter([
 		element: (
 			<Protected requiredRole="admin">
 				<AdminOrders />
+			</Protected>
+		),
+	},
+	{
+		path: "/admin/orders/:orderId",
+		element: (
+			<Protected requiredRole="admin">
+				<OrderItems />
 			</Protected>
 		),
 	},
