@@ -5,8 +5,8 @@ import { Separator } from "../ui/separator";
 
 export default function CartItemCard({ item }: { item: CartProps }) {
 	const { removeItem, updateQuantity } = useFetchCart();
-	const handleRemoveCartItems = (id: string) => {
-		removeItem(id);
+	const handleRemoveCartItems = async (id: string) => {
+		await removeItem(id);
 	};
 	const handleItemQuantity = async (id: string, quantity: number) => {
 		await updateQuantity({ id, quantity });

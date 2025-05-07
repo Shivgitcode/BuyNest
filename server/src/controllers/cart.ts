@@ -113,6 +113,7 @@ export const getCartItems = async (
 			where: {
 				userId: id,
 			},
+			order: [["createdAt", "DESC"]],
 			include: Product,
 		});
 
