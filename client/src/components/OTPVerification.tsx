@@ -33,7 +33,7 @@ const OTPVerification = ({
 			<div className="text-center space-y-2">
 				<h3 className="text-xl font-semibold">Enter verification code</h3>
 				<p className="text-sm text-gray-600">
-					We've sent a 6-digit code to {email}
+					We've sent a 4-digit code to {email}
 				</p>
 			</div>
 
