@@ -60,11 +60,7 @@ const routes = createBrowserRouter([
 				element: <Orders />,
 			},
 			{
-				element: (
-					<Protected>
-						<Profile />
-					</Protected>
-				),
+				element: <Profile />,
 				index: true,
 			},
 			{

@@ -3,12 +3,14 @@ import type { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../ErrorHandler/error";
 import { logger } from "../logger/devLogger";
 import { OTP } from "../models";
+import Address from "../models/address.model";
 import User from "../models/user.model";
 import generateOtp from "../utils/generateOtp";
 import { transportMail } from "../utils/nodemailer";
 import { otpTemplate } from "../utils/template";
 import { signedToken } from "../utils/tokenGenerator";
 import { LoginSchema, type SignUp, SignupSchema } from "../utils/types";
+
 export const signup = async (
 	req: Request,
 	res: Response,
@@ -27,14 +29,28 @@ export const signup = async (
 		const signupBody = parseResult.data;
 
 		const hashPassword = await bcrypt.hash(signupBody.password, 12);
+
+		// Create user first
 		const newUser = await User.create({
 			username: signupBody.username,
 			password: hashPassword,
 			email: signupBody.email,
 			role: signupBody.role,
-			address: signupBody.address,
 			phoneNumber: signupBody.phoneNumber,
 		});
+
+		// Create address for the user
+		if (signupBody.address) {
+			await Address.create({
+				userId: newUser.getDataValue("id"),
+				street: signupBody.address.street,
+				city: signupBody.address.city,
+				state: signupBody.address.state,
+				zipCode: signupBody.address.zipCode,
+				country: signupBody.address.country,
+			});
+		}
+
 		res.status(201).json({
 			message: "user created",
 			data: newUser.toJSON(),
@@ -130,6 +146,12 @@ export const verifyOtp = async (
 			where: {
 				email,
 			},
+			include: [
+				{
+					model: Address,
+					attributes: ["street", "city", "state", "zipCode", "country"],
+				},
+			],
 		});
 		const verifyOtp = findOtp?.toJSON().otp.toString() === otp;
 		if (!verifyOtp) {
@@ -159,6 +181,12 @@ export const getUser = async (
 	try {
 		const user = await User.findOne({
 			where: { email: req.user?.email },
+			include: [
+				{
+					model: Address,
+					attributes: ["street", "city", "state", "zipCode", "country"],
+				},
+			],
 		});
 		if (!user) {
 			return next(new ErrorHandler("User not found", 404));
@@ -180,4 +208,13 @@ export const logout = async (req: Request, res: Response) => {
 	res.status(200).json({
 		message: "logged out successfully",
 	});
+};
+
+export const saveUser = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+	} catch (error) {}
 };

@@ -1,4 +1,13 @@
 import { z } from "zod";
+
+const AddressSchema = z.object({
+	street: z.string({ message: "Street address is required" }),
+	city: z.string({ message: "City is required" }),
+	state: z.string({ message: "State is required" }),
+	zipCode: z.string({ message: "ZIP code is required" }),
+	country: z.string({ message: "Country is required" }),
+});
+
 export const SignupSchema = z.object({
 	username: z.string({ message: "username required" }),
 	email: z
@@ -6,9 +15,19 @@ export const SignupSchema = z.object({
 		.email({ message: "enter valid mail" }),
 	password: z.string({ message: "enter password" }),
 	role: z.string({ message: "Please mention your role" }).optional(),
-	address: z.string({ message: "Please add your Address" }),
+	address: z
+		.string()
+		.transform((val) => {
+			try {
+				return JSON.parse(val);
+			} catch {
+				throw new Error("Invalid address format");
+			}
+		})
+		.pipe(AddressSchema),
 	phoneNumber: z.number().min(10, { message: "phone number invalid" }),
 });
+
 export type SignUp = z.infer<typeof SignupSchema> & { id: string };
 
 export const LoginSchema = z.object({
@@ -133,3 +152,16 @@ export const TwilioSchema = z.object({
 });
 
 export type TwilioProps = z.infer<typeof TwilioSchema>;
+
+export type Address = z.infer<typeof AddressSchema>;
+export type User = {
+	id: string;
+	username: string;
+	email: string;
+	password: string;
+	phoneNumber: number;
+	role: string;
+	Address: Address;
+	createdAt: string;
+	updatedAt: string;
+};

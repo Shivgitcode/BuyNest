@@ -1,3 +1,4 @@
+import Address from "../models/address.model";
 import CartItem from "../models/cart.model";
 import Category from "../models/categories.model";
 import Product from "../models/product.model";
@@ -20,6 +21,12 @@ export const defineAssociations = () => {
 		foreignKey: "userId",
 	});
 
+	User.hasOne(Address, {
+		foreignKey: "userId",
+	});
+	Address.belongsTo(User, {
+		foreignKey: "userId",
+	});
 	CartItem.belongsTo(Product, {
 		foreignKey: "productId",
 	});

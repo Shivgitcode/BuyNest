@@ -1,12 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../ErrorHandler/error";
 import { verifyToken } from "../utils/tokenGenerator";
-import type { SignUp } from "../utils/types";
+import type { User } from "../utils/types";
 
 declare global {
 	namespace Express {
 		interface Request {
-			user?: SignUp;
+			user?: User;
 		}
 	}
 }
@@ -23,7 +23,7 @@ export const checkAuth = async (
 		}
 
 		const isToken = await verifyToken(token);
-		const user = isToken as SignUp;
+		const user = isToken as User;
 		req.user = user;
 		next();
 	} catch (error) {
@@ -42,7 +42,7 @@ export const checkAdmin = async (
 			return next(new ErrorHandler("User not loggedIn", 401));
 		}
 		const parsedToken = await verifyToken(token);
-		const user = parsedToken as SignUp;
+		const user = parsedToken as User;
 		if (user.role !== "admin") {
 			return next(new ErrorHandler("User is not Admin", 401));
 		}

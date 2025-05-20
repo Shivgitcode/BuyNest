@@ -2,6 +2,7 @@ import express from "express";
 import {
 	addProduct,
 	deleteProduct,
+	updateOrderStatus,
 	updateProducts,
 } from "../controllers/admin";
 import { checkAdmin } from "../middleware/auth.middleware";
@@ -17,3 +18,4 @@ adminRouter.patch(
 	updateProducts,
 );
 adminRouter.delete("/product/delete/:productId", checkAdmin, deleteProduct);
+adminRouter.patch("/order/update/:orderId", updateOrderStatus);

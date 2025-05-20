@@ -11,29 +11,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ReceiptText } from "lucide-react";
 import { Link, useParams } from "react-router";
 
-// // In a real app, fetch order data via API or context
-// // For now, we mimic with static/mock data
-// const mockOrders = [
-// 	{
-// 		id: "12345",
-// 		date: "June 15, 2023",
-// 		status: "Delivered",
-// 		total: 149.99,
-// 		items: [
-// 			{ name: "Classic T-Shirt", qty: 1, price: 59.99 },
-// 			{ name: "Slim Jeans", qty: 1, price: 74.99 },
-// 			{ name: "Sneakers", qty: 1, price: 15.0 },
-// 		],
-// 		shipping: {
-// 			name: "John Doe",
-// 			address: "123 Main St, Springfield, USA",
-// 			email: "john.doe@example.com",
-// 		},
-// 		invoiceNo: "INV-0012345",
-// 	},
-// 	// ... add more mock orders as needed
-// ];
-
 const OrderSummary = () => {
 	const { orderId } = useParams<{ orderId: string }>();
 	console.log(orderId);
@@ -83,23 +60,6 @@ const OrderSummary = () => {
 				</CardHeader>
 				<CardContent>
 					<div className="mb-6 grid grid-cols-2 gap-4 text-sm">
-						{/* <div>
-							<span className="font-medium text-gray-700">Order Status:</span>
-							<span
-								className={`ml-2 px-2 py-1 rounded-md text-xs font-medium
-                ${
-									order.status === "Delivered"
-										? "bg-green-100 text-green-800"
-										: order.status === "Processing"
-											? "bg-blue-100 text-blue-800"
-											: order.status === "Shipped"
-												? "bg-purple-100 text-purple-800"
-												: "bg-red-100 text-red-800"
-								}`}
-							>
-								{order.status}
-							</span>
-						</div> */}
 						<div>
 							<span className="font-medium text-gray-700">Invoice No:</span>
 							<span className="ml-2">{oneOrder.data.invoiceNo}</span>
@@ -118,7 +78,7 @@ const OrderSummary = () => {
 						</div>
 						<div className="col-span-2">
 							<span className="font-medium text-gray-700">Address:</span>
-							<span className="ml-2">{oneOrder.data.address}</span>
+							<span className="ml-2">{`${oneOrder.data.address.street}, ${oneOrder.data.address.city}, ${oneOrder.data.address.state}, ${oneOrder.data.address.zipCode}, ${oneOrder.data.address.country}`}</span>
 						</div>
 					</div>
 					<div className="border-b mb-4" />

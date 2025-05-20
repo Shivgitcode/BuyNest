@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../sequalize/db";
+
 const User = sequelize.define("User", {
 	id: {
 		type: DataTypes.UUID,
@@ -26,8 +27,6 @@ const User = sequelize.define("User", {
 	phoneNumber: {
 		type: DataTypes.BIGINT,
 	},
-	address: {
-		type: DataTypes.STRING,
-	},
 });
+
 export default User;

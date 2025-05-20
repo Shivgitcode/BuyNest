@@ -109,7 +109,14 @@ export const getOneProduct = async (
 		const id = req.params.productId;
 		const findProduct = await Product.findOne({
 			where: { id },
+			include: {
+				model: Category,
+				attributes: {
+					exclude: ["createdAt", "updatedAt"],
+				},
+			},
 		});
+		console.log(findProduct);
 		res.status(200).json({
 			message: "all products",
 			data: findProduct,

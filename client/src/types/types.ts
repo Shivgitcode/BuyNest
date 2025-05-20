@@ -5,7 +5,7 @@ export type User = {
 	email: string;
 	password: string;
 	role: string;
-	address: string;
+	Address: Address;
 	phoneNumber: number;
 	createdAt: string;
 };
@@ -13,13 +13,19 @@ export type ResponseProps = {
 	message: string;
 	user: User;
 };
+export type Address = {
+	street: string;
+	city: string;
+	state: string;
+	zipCode: string;
+	country: string;
+};
 
 export const FormSchema = z.object({
 	firstname: z.string(),
 	lastname: z.string(),
 	email: z.string().email({ message: "invalid email" }),
 	password: z.string(),
-	address: z.string(),
 	phoneNumber: z
 		.string()
 		.min(10, { message: "invalid phoneNumber" })
@@ -134,7 +140,7 @@ export type Order = {
 	order_tags: OrderTags;
 	terminal_data: null;
 	cart_details: CartDetails;
-	address: string;
+	address: Address;
 
 	createdAt: string;
 };

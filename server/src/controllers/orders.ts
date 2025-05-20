@@ -163,12 +163,14 @@ export const getOrderItems = async (
 				orderId,
 			},
 		});
+
 		const oneOrderSum = {
 			...getOrder.data,
 			invoiceNo: `INV-${getOrder.data.cf_order_id}`,
 			allItems: getAllItems,
-			address: user?.address,
+			address: user?.Address,
 		};
+		console.log(oneOrderSum);
 		res.status(200).json({
 			message: "data of one order",
 			data: oneOrderSum,

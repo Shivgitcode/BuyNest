@@ -1,3 +1,4 @@
+import { fetchCategories } from "@/actions/fetchCategories";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,21 +13,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import useAdminCreateAndUpdate from "@/hooks/use-admin-update-delete";
-import type { ProductProps } from "@/types/types";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ImageIcon, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-
-const categories = [
-	{ id: "laptop-cat-id", category: "Laptops" },
-	{ id: "smartphone-cat-id", category: "Smartphones" },
-	{ id: "audio-cat-id", category: "Audio" },
-	{ id: "tablet-cat-id", category: "Tablets" },
-	{ id: "accessory-cat-id", category: "Accessories" },
-	{ id: "monitor-cat-id", category: "Monitors" },
-	{ id: "camera-cat-id", category: "Cameras" },
-	{ id: "component-cat-id", category: "Components" },
-];
 
 const AdminProductForm = () => {
 	const { id } = useParams();
@@ -34,22 +24,39 @@ const AdminProductForm = () => {
 	const isEditMode = Boolean(id);
 	const { isSuccess, sampleProduct, addProduct, updatingProduct } =
 		useAdminCreateAndUpdate(isEditMode, id as string);
-
-	useEffect(() => {
-		if (isSuccess) {
-			setFormData(sampleProduct as ProductProps);
-		}
-	}, [sampleProduct]);
+	const { data: categories } = useQuery({
+		queryKey: ["admin-categories"],
+		queryFn: fetchCategories,
+	});
 
 	const [file, setFile] = useState<File | null>(null);
 	const [preview, setPreview] = useState("");
 	const [formData, setFormData] = useState({
-		product: sampleProduct?.product || "",
-		desc: sampleProduct?.desc || "",
-		price: sampleProduct?.price || "",
-		categoryId: sampleProduct?.categoryId || "none",
-		image: sampleProduct?.image || "",
+		product: "",
+		desc: "",
+		price: "",
+		categoryId: "",
+		image: "",
 	});
+
+	useEffect(() => {
+		if (isSuccess && sampleProduct && categories) {
+			const matchingCategory = categories.find(
+				(cat) =>
+					cat.category.toLowerCase() ===
+					sampleProduct.Category?.category?.toLowerCase(),
+			);
+
+			setFormData((prev) => ({
+				...prev,
+				product: sampleProduct.product || "",
+				desc: sampleProduct.desc || "",
+				price: String(sampleProduct.price) || "",
+				categoryId: matchingCategory?.category || "",
+				image: sampleProduct.image || "",
+			}));
+		}
+	}, [sampleProduct, isSuccess, categories]);
 
 	const productFormData = new FormData();
 	const handleChange = (
@@ -69,7 +76,6 @@ const AdminProductForm = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log("Form submission initiated");
 
 		productFormData.append("product", formData.product);
 		productFormData.append("desc", formData.desc);
@@ -83,13 +89,11 @@ const AdminProductForm = () => {
 		}
 
 		if (isEditMode) {
-			console.log("Updating product...");
 			await updatingProduct({
 				productId: id as string,
 				productData: productFormData,
 			});
 		} else {
-			console.log("Adding new product...");
 			await addProduct(productFormData);
 		}
 	};
@@ -107,7 +111,6 @@ const AdminProductForm = () => {
 
 			<form onSubmit={handleSubmit}>
 				<div className="grid gap-6 mb-6 md:grid-cols-3">
-					{/* Product Information */}
 					<div className="md:col-span-2 space-y-6">
 						<Card>
 							<CardContent className="pt-6">
@@ -149,12 +152,13 @@ const AdminProductForm = () => {
 											value={formData.categoryId}
 											onValueChange={handleCategoryChange}
 										>
-											<SelectTrigger>
-												<SelectValue placeholder="Select category" />
+											<SelectTrigger className="w-full">
+												<SelectValue>
+													{formData.categoryId || "Select a category"}
+												</SelectValue>
 											</SelectTrigger>
 											<SelectContent>
-												<SelectItem value="none">Select a category</SelectItem>
-												{categories.map((category) => (
+												{categories?.map((category) => (
 													<SelectItem
 														key={category.id}
 														value={category.category}
@@ -190,7 +194,6 @@ const AdminProductForm = () => {
 						</Card>
 					</div>
 
-					{/* Image Upload */}
 					<div>
 						<Card>
 							<CardContent className="pt-6">

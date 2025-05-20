@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import ErrorHandler from "../ErrorHandler/error";
 import { logger } from "../logger/devLogger";
+import { Order } from "../models";
 import Product from "../models/product.model";
 import { putImage } from "../utils/aws";
 import { category } from "../utils/data";
@@ -110,5 +111,33 @@ export const updateProducts = async (
 		});
 	} catch (error) {
 		next(error);
+	}
+};
+
+export const updateOrderStatus = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { status } = req.body;
+		const { orderId } = req.params;
+		console.log(status);
+		console.log(orderId);
+		await Order.update(
+			{
+				orderStatus: (status as string).toLowerCase(),
+			},
+			{
+				where: {
+					orderId,
+				},
+			},
+		);
+		res.status(200).json({
+			message: "status updated",
+		});
+	} catch (error) {
+		if (error instanceof Error) next(error);
 	}
 };

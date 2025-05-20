@@ -28,14 +28,11 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-// Mock data for orders
-
 const Orders = () => {
 	const [statusFilter, setStatusFilter] = useState("all");
 	const [searchQuery, setSearchQuery] = useState("");
 	const { orders, isPending } = useOrder();
 
-	// Filter orders based on status and search query
 	const filteredOrders = orders?.data?.filter((order) => {
 		const matchesStatus =
 			statusFilter === "all" ||
@@ -115,11 +112,11 @@ const Orders = () => {
 												<span
 													className={`inline-block px-2 py-1 rounded-md text-xs font-medium
                           ${
-														order.orderStatus === "Delivered"
+														order.orderStatus === "delivered"
 															? "bg-green-100 text-green-800"
-															: order.orderStatus === "Processing"
+															: order.orderStatus === "processing"
 																? "bg-blue-100 text-blue-800"
-																: order.orderStatus === "Shipped"
+																: order.orderStatus === "shipped"
 																	? "bg-purple-100 text-purple-800"
 																	: "bg-red-100 text-red-800"
 													}`}

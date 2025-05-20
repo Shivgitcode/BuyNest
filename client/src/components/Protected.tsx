@@ -7,7 +7,7 @@ type ProtectedProps = {
 	requiredRole?: string;
 };
 
-function Protected({ children, requiredRole }: ProtectedProps) {
+function Protected({ children, requiredRole = "user" }: ProtectedProps) {
 	const { isAuthenticated, user } = useAuth();
 	const navigate = useNavigate();
 	if (!isAuthenticated) navigate("/auth/login");

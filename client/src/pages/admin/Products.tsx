@@ -17,7 +17,9 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 
+import { fetchCategories } from "@/actions/fetchCategories";
 import useAdminProduct from "@/hooks/use-admin-product";
+import { useQuery } from "@tanstack/react-query";
 import {
 	ChevronLeft,
 	ChevronRight,
@@ -26,13 +28,18 @@ import {
 	Search,
 	Trash2,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
-
+const ITEMS_PER_PAGE = 10;
 const AdminProducts = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("all");
+	const [currentPage, setCurrentPage] = useState(1);
 	const { adminProducts, isPending, handleDelete } = useAdminProduct();
+	const { data: categories } = useQuery({
+		queryKey: ["admin-categories"],
+		queryFn: fetchCategories,
+	});
 
 	const filteredProducts = adminProducts?.filter((product) => {
 		const matchesSearch =
@@ -40,9 +47,26 @@ const AdminProducts = () => {
 			product.desc.toLowerCase().includes(searchTerm.toLowerCase());
 		const matchesCategory =
 			categoryFilter === "all" ||
-			product.Category.category === categoryFilter.toLowerCase();
+			product.Category.category.toLowerCase() === categoryFilter.toLowerCase();
 		return matchesSearch && matchesCategory;
 	});
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [categoryFilter, searchTerm]);
+
+	const totalPages = Math.ceil(
+		(filteredProducts?.length || 0) / ITEMS_PER_PAGE,
+	);
+	const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+	const paginatedProducts = filteredProducts?.slice(
+		startIndex,
+		startIndex + ITEMS_PER_PAGE,
+	);
+
+	const handlePageChange = (newPage: number) => {
+		setCurrentPage(newPage);
+	};
 
 	return (
 		<AdminLayout title="Products">
@@ -60,17 +84,21 @@ const AdminProducts = () => {
 				<div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
 					<Select value={categoryFilter} onValueChange={setCategoryFilter}>
 						<SelectTrigger className="w-full sm:w-[180px]">
-							<SelectValue placeholder="All Categories" />
+							<SelectValue placeholder="All Categories">
+								{categoryFilter === "all"
+									? "All Categories"
+									: categoryFilter.charAt(0).toUpperCase() +
+										categoryFilter.slice(1)}
+							</SelectValue>
 						</SelectTrigger>
 						<SelectContent>
 							<SelectItem value="all">All Categories</SelectItem>
-							<SelectItem value="Electronics">Electronics</SelectItem>
-							<SelectItem value="Home">Home</SelectItem>
-							<SelectItem value="Audio">Audio</SelectItem>
-							<SelectItem value="Tablets">Tablets</SelectItem>
-							<SelectItem value="Accessories">Accessories</SelectItem>
-							<SelectItem value="Lightining">Lightining</SelectItem>
-							<SelectItem value="Cameras">Cameras</SelectItem>
+							{categories?.map((category) => (
+								<SelectItem key={category.id} value={category.category}>
+									{category.category.charAt(0).toUpperCase() +
+										category.category.slice(1)}
+								</SelectItem>
+							))}
 						</SelectContent>
 					</Select>
 					<Button asChild>
@@ -97,7 +125,7 @@ const AdminProducts = () => {
 						{isPending ? (
 							<div>Loading...</div>
 						) : (
-							filteredProducts?.map((product) => (
+							paginatedProducts?.map((product) => (
 								<TableRow key={product.id}>
 									<TableCell className="font-medium">
 										<div className="flex items-center gap-3">
@@ -141,13 +169,23 @@ const AdminProducts = () => {
 			</div>
 
 			<div className="flex items-center justify-end mt-4 space-x-2">
-				<Button variant="outline" size="icon">
+				<Button
+					variant="outline"
+					size="icon"
+					onClick={() => handlePageChange(currentPage - 1)}
+					disabled={currentPage === 1}
+				>
 					<ChevronLeft className="h-4 w-4" />
 				</Button>
 				<Button variant="outline" size="sm" className="px-4">
-					Page 1 of 1
+					Page {currentPage} of {totalPages}
 				</Button>
-				<Button variant="outline" size="icon">
+				<Button
+					variant="outline"
+					size="icon"
+					onClick={() => handlePageChange(currentPage + 1)}
+					disabled={currentPage === totalPages}
+				>
 					<ChevronRight className="h-4 w-4" />
 				</Button>
 			</div>

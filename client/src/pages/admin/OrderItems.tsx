@@ -1,4 +1,5 @@
 import { getAllOrderItems } from "@/actions/getAllOrderItems";
+import { orderStatusFn } from "@/actions/updateOrderStatus";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
 	ArrowLeft,
 	CheckCircle2,
@@ -36,6 +37,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { toast } from "sonner";
 
 // Update the statusConfig to match the actual status values
 const statusConfig = {
@@ -86,14 +88,27 @@ const OrderDetail = () => {
 	const [orderStatus, setOrderStatus] = useState("Processing");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	// Fix the query key to use the actual orderId
 	const { data: order } = useQuery({
 		queryKey: ["orderAdminItems", orderId],
 		queryFn: () => getAllOrderItems(orderId as string),
 		enabled: typeof orderId === "string",
 	});
+	const { mutate: updateOrderStatus } = useMutation({
+		mutationFn: orderStatusFn,
+		onMutate: () => {
+			toast.loading("updating status", { id: "order-status" });
+		},
+		onSuccess: (data) => {
+			toast.success(data.message);
+			toast.dismiss("order-status");
+		},
+		onError: (error) => {
+			console.log(error);
+			toast.error(error.message);
+			toast.dismiss("order-status");
+		},
+	});
 
-	// Update the renderStatusBadge function to handle undefined config
 	const renderStatusBadge = (status: string) => {
 		const config = statusConfig[status as keyof typeof statusConfig];
 		if (!config) return <span className="capitalize">{status}</span>;
@@ -109,11 +124,8 @@ const OrderDetail = () => {
 
 	const handleStatusUpdate = () => {
 		setIsSubmitting(true);
-
-		// Simulate API call
-		setTimeout(() => {
-			setIsSubmitting(false);
-		}, 800);
+		updateOrderStatus({ orderId: orderId as string, status: orderStatus });
+		setIsSubmitting(false);
 	};
 	return (
 		<AdminLayout title={`Order #${orderId}`}>
@@ -195,13 +207,12 @@ const OrderDetail = () => {
 											Shipping Address
 										</h3>
 										<div className="text-sm text-gray-600">
-											<p>{mockOrder.shippingAddress.street}</p>
+											<p>{order?.data.address.street}</p>
 											<p>
-												{mockOrder.shippingAddress.city},{" "}
-												{mockOrder.shippingAddress.state}{" "}
-												{mockOrder.shippingAddress.zip}
+												{order?.data.address.city}, {order?.data.address.state}{" "}
+												{order?.data.address.zipCode}
 											</p>
-											<p>{mockOrder.shippingAddress.country}</p>
+											<p>{order?.data.address.country}</p>
 										</div>
 									</div>
 
@@ -237,41 +248,31 @@ const OrderDetail = () => {
 									)}
 								</div>
 
+								<Separator />
+
 								<div>
-									<Button variant="outline" size="sm" className="w-full">
-										View Customer Details
-									</Button>
-								</div>
-							</CardContent>
-						</Card>
-
-						<Card>
-							<CardHeader>
-								<CardTitle>Update Status</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="space-y-4">
-									<div className="space-y-2">
-										<Label htmlFor="status">Order Status</Label>
-										<Select value={orderStatus} onValueChange={setOrderStatus}>
-											<SelectTrigger id="status" className="w-full">
-												<SelectValue placeholder="Select status" />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value="Processing">Processing</SelectItem>
-												<SelectItem value="Shipped">Shipped</SelectItem>
-												<SelectItem value="Delivered">Delivered</SelectItem>
-												<SelectItem value="Cancelled">Cancelled</SelectItem>
-											</SelectContent>
-										</Select>
-									</div>
-
+									<Label htmlFor="status">Order Status</Label>
+									<Select
+										value={orderStatus}
+										onValueChange={setOrderStatus}
+										disabled={isSubmitting}
+									>
+										<SelectTrigger id="status" className="mt-1.5">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="Processing">Processing</SelectItem>
+											<SelectItem value="Shipped">Shipped</SelectItem>
+											<SelectItem value="Delivered">Delivered</SelectItem>
+											<SelectItem value="Cancelled">Cancelled</SelectItem>
+										</SelectContent>
+									</Select>
 									<Button
-										className="w-full"
+										className="w-full mt-4"
 										onClick={handleStatusUpdate}
 										disabled={isSubmitting}
 									>
-										{isSubmitting ? "Updating..." : "Update Status"}
+										Update Status
 									</Button>
 								</div>
 							</CardContent>

@@ -65,7 +65,7 @@ const Settings = () => {
 			username: user?.username || "",
 			email: user?.email || "",
 			phoneNumber: user?.phoneNumber.toString() || "",
-			address: user?.address || "",
+			address: user?.Address.street || "",
 		},
 	});
 	const passwordForm = useForm<PasswordProps>({
