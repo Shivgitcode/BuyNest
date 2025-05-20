@@ -15,13 +15,13 @@ import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 type SignupStep = "form" | "address";
-type SignupProvider = "email" | "google";
+// type SignupProvider = "email" | "google";
 
 const Signup = () => {
 	const router = useNavigate();
 	const [showPassword, setShowPassword] = useState(false);
 	const [signupStep, setSignupStep] = useState<SignupStep>("form");
-	const [provider, setProvider] = useState<SignupProvider>("email");
+	// const [provider, setProvider] = useState<SignupProvider>("email");
 	const [formData, setFormData] = useState<FormTypes | null>(null);
 
 	const { mutateAsync: signup } = useMutation({
@@ -60,7 +60,7 @@ const Signup = () => {
 	};
 
 	const handleGoogleSignup = () => {
-		setProvider("google");
+		// setProvider("google");
 		toast.success("Google authentication successful");
 	};
 
@@ -86,7 +86,6 @@ const Signup = () => {
 
 	return (
 		<div className="min-h-screen flex flex-col md:flex-row">
-			{/* Left Side - Image */}
 			<div className="hidden md:block md:w-1/2 bg-gray-100 relative animate-fade-in">
 				<img
 					src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=800"
@@ -104,7 +103,6 @@ const Signup = () => {
 				</div>
 			</div>
 
-			{/* Right Side - Signup Form */}
 			<div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8 md:p-16 animate-scale-in">
 				<div className="w-full max-w-md">
 					<div className="text-center mb-8">

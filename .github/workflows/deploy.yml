@@ -7,6 +7,7 @@ on:
 
 env:
   VITE_BASE_URL: https://buynest-api.shivn.tech/api/v1
+  NODE_ENV: production
 
 
 jobs:
