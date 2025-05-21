@@ -42,9 +42,9 @@ const AdminProducts = () => {
 	});
 
 	const filteredProducts = adminProducts?.filter((product) => {
-		const matchesSearch =
-			product.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			product.desc.toLowerCase().includes(searchTerm.toLowerCase());
+		const matchesSearch = product.product
+			.toLowerCase()
+			.includes(searchTerm.toLowerCase());
 		const matchesCategory =
 			categoryFilter === "all" ||
 			product.Category.category.toLowerCase() === categoryFilter.toLowerCase();
