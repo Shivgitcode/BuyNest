@@ -94,7 +94,7 @@ const Orders = () => {
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{!isPending ? (
+								{!isPending && filteredOrders?.length !== 0 ? (
 									filteredOrders?.map((order) => (
 										<TableRow key={order.order_id}>
 											<TableCell className="font-medium">

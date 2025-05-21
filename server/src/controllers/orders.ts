@@ -88,14 +88,32 @@ export const verifyPayment = async (
 			"2025-01-01",
 			orderId,
 		);
-		const currentOrder = await Cashfree.PGFetchOrder("2025-01-01", orderId);
-		console.log(paymentVerification);
-		if (!paymentVerification) {
-			next(new ErrorHandler("payment is not verified", 400));
+		const successfulPayment = paymentVerification.data.find(
+			(txn) => txn.payment_status === "SUCCESS",
+		);
+
+		const currentOrder = await Cashfree.PGOrderFetchPayments(
+			"2025-01-01",
+			orderId,
+		);
+
+		console.log("current payment verification", paymentVerification);
+		if (!successfulPayment) {
+			await Order.destroy({
+				where: {
+					orderId: orderId,
+				},
+			});
+			return next(new ErrorHandler("Payment not successful", 400));
 		}
 		await CartItem.destroy({
 			where: {
 				userId: user?.id as string,
+			},
+		});
+		const getAllItems = await OrderItems.findAll({
+			where: {
+				orderId,
 			},
 		});
 		await transportMail.sendMail({
@@ -106,8 +124,9 @@ export const verifyPayment = async (
 				orderId,
 				currentOrder.data.customer_details?.customer_name as string,
 				new Date().toLocaleDateString(),
-				"same",
+				getAllItems,
 				currentOrder.data.order_amount as number,
+				`https://buynest-c70cf.web.app/profile/orders/${orderId}`,
 				"BuyNest",
 			),
 		});

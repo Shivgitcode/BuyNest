@@ -34,10 +34,23 @@ export const orderTemplate = (
 	order_number: string,
 	customer_name: string,
 	order_date: string,
-	order_items: string,
+	order_items: {
+		id: string;
+		quantity: number;
+		unitprice: number;
+		name: string;
+	}[],
 	order_total: number,
+	order_links: string,
 	company_name: string,
 ) => {
+	const formattedItems = order_items
+		.map(
+			(item) =>
+				`<li>${item.name} - Quantity: ${item.quantity} - Price: $${item.unitprice.toFixed(2)} - Total: $${(item.quantity * item.unitprice).toFixed(2)}</li>`,
+		)
+		.join("");
+
 	return `<!DOCTYPE html>
 <html>
 <head>
@@ -63,11 +76,11 @@ export const orderTemplate = (
       <h3>Order Summary</h3>
       <p><strong>Items:</strong></p>
       <ul>
-        ${order_items}
+        ${formattedItems}
       </ul>
       <p><strong>Total:</strong> ${order_total}</p>
     </div>
-    <a href="{order_links}" class="btn">View Your Order</a>
+    <a href=${order_links} class="btn">View Your Order</a>
     <div class="footer">
       If you have any questions, contact us at {SUPPORT_EMAIL}.<br>
       &copy; ${company_name}

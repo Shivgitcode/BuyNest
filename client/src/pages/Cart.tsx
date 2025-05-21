@@ -24,12 +24,18 @@ const Cart = () => {
 
 	const { mutateAsync: verifyingPayment } = useMutation({
 		mutationFn: verifyPayment,
+		onMutate: () => {
+			toast.loading("verifying payment", { id: "payment-verify" });
+		},
 		onSuccess: () => {
 			navigate("/payment/success");
+			toast.dismiss("payment-verify");
 			queryclient.invalidateQueries({ queryKey: ["cart"] });
 		},
 		onError: () => {
+			console.log("hello");
 			navigate("/payment/failed");
+			toast.dismiss("payment-verify");
 		},
 	});
 
